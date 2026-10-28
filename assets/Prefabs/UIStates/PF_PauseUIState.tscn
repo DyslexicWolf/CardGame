@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://b7oufb31iihli"]
+
+[ext_resource type="Script" uid="uid://b44gieyjetk8r" path="res://assets/Scripts/StateMachine/GD_PauseUIState.gd" id="1_ew1kl"]
+
+[node name="PauseUIState" type="Control" unique_id=900992787]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ew1kl")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2044820704]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer" unique_id=1687191829]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Resume"
+
+[node name="QuitButton" type="Button" parent="VBoxContainer" unique_id=1394384834]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Quit"
+
+[connection signal="pressed" from="VBoxContainer/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

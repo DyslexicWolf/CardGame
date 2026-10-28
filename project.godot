@@ -14,6 +14,10 @@ config/name="CardGame"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+PlayerUI="*uid://dqyhypxahe5p0"
+
 [display]
 
 window/size/viewport_width=1920

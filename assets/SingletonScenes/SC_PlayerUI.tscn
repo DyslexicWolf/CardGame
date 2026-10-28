@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dqyhypxahe5p0"]
+
+[ext_resource type="Script" uid="uid://jkih65iqqlre" path="res://assets/Scripts/Singletons/GD_PlayerUI.gd" id="1_3m6sk"]
+[ext_resource type="PackedScene" uid="uid://cntmc4mm70023" path="res://assets/Prefabs/UIStates/PF_HUDState.tscn" id="2_ubxmo"]
+[ext_resource type="PackedScene" uid="uid://cjvrikioq711v" path="res://assets/Prefabs/UIStates/PF_CombatUIState.tscn" id="3_2qpwr"]
+[ext_resource type="PackedScene" uid="uid://dm1013ql5oixo" path="res://assets/Prefabs/UIStates/PF_InventoryUIState.tscn" id="4_xdesr"]
+[ext_resource type="PackedScene" uid="uid://dj86kwldl0ter" path="res://assets/Prefabs/UIStates/PF_LootUIState.tscn" id="5_2uydu"]
+[ext_resource type="PackedScene" uid="uid://b7oufb31iihli" path="res://assets/Prefabs/UIStates/PF_PauseUIState.tscn" id="6_8b3mn"]
+
+[node name="PlayerUI" type="CanvasLayer" unique_id=1459887254 node_paths=PackedStringArray("initial_state")]
+script = ExtResource("1_3m6sk")
+initial_state = NodePath("HUDState")
+
+[node name="HUDState" parent="." unique_id=1722464567 instance=ExtResource("2_ubxmo")]
+
+[node name="CombatUIState" parent="." unique_id=711801117 instance=ExtResource("3_2qpwr")]
+visible = false
+
+[node name="InventoryUIState" parent="." unique_id=839982300 instance=ExtResource("4_xdesr")]
+visible = false
+
+[node name="LootUIState" parent="." unique_id=1606567484 instance=ExtResource("5_2uydu")]
+visible = false
+
+[node name="PauseUIState" parent="." unique_id=900992787 instance=ExtResource("6_8b3mn")]
+visible = false

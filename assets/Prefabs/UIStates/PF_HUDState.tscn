@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://cntmc4mm70023"]
+
+[ext_resource type="Script" uid="uid://d3faqh54mak25" path="res://assets/Scripts/StateMachine/GD_HUDState.gd" id="1_e62dh"]
+
+[node name="HUDState" type="Control" unique_id=1722464567]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e62dh")
