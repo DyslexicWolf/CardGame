@@ -3,8 +3,8 @@ extends Control
 
 signal card_played(card: BaseCard, global_pos: Vector2) # hook for future mechanics
 
-const MAX_HAND_SIZE := 8
-
+@export var max_hand_size := 8
+@export var draw_amount := 5
 @export var card_scene: PackedScene
 @export var draw_button: Button
 
@@ -19,7 +19,6 @@ const MAX_HAND_SIZE := 8
 @export var fan_center_offset := 0.0
 
 @export_group("Draw animation")
-@export var draw_count := 5
 @export var draw_duration := 0.22
 @export var draw_stagger := 0.08
 @export var relayout_duration := 0.2
@@ -31,13 +30,13 @@ var _player_hand: Control
 
 func _ready() -> void:
 	_player_hand = self
-	_rebuild_deck()
+	rebuild_deck()
 	if draw_button:
 		draw_button.pressed.connect(_on_draw_pressed)
 
 
 func draw_cards(count: int) -> void:
-	var amount := mini(count, mini(MAX_HAND_SIZE - _hand_cards.size(), _deck.size()))
+	var amount := mini(count, mini(max_hand_size - _hand_cards.size(), _deck.size()))
 	if amount <= 0:
 		return
 
@@ -62,7 +61,7 @@ func clear_hand() -> void:
 	_hand_cards.clear()
 
 
-func _rebuild_deck() -> void:
+func rebuild_deck() -> void:
 	_deck.clear()
 	for c in Inventory.deck_cards:
 		if c != null:
@@ -71,7 +70,7 @@ func _rebuild_deck() -> void:
 
 
 func _on_draw_pressed() -> void:
-	draw_cards(draw_count)
+	draw_cards(draw_amount)
 
 
 func _spawn_card(resource: CardResource) -> BaseCard:

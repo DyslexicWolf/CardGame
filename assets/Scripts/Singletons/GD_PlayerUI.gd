@@ -1,12 +1,15 @@
 extends CanvasLayer
 
 signal ui_changed(new_ui_state: State)
+@warning_ignore("unused_signal")
+signal entered_combat()
+@warning_ignore("unused_signal")
+signal exited_combat()
 
 @export var initial_state: State
 
 var current_state: State
 var states: Dictionary = { }
-var in_combat: bool = false
 
 
 func _ready() -> void:

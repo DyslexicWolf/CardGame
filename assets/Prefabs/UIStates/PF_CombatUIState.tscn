@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://csvxc575byp7d" path="res://assets/Prefabs/UI/PF_PlayerHand.tscn" id="4_282om"]
 [ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="5_hpe6p"]
 
-[node name="CombatUIState" type="Control" unique_id=711801117]
+[node name="CombatUIState" type="Control" unique_id=711801117 node_paths=PackedStringArray("player_hand")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,6 +14,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_f63og")
+player_hand = NodePath("PlayerHand")
 
 [node name="NumbersHBoxContainer" type="HBoxContainer" parent="." unique_id=438555337]
 layout_mode = 1

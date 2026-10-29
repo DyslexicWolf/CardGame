@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="2_qclop"]
 [ext_resource type="PackedScene" uid="uid://dbll7yrhb02fl" path="res://assets/Prefabs/UI/PF_InventoryDeckView.tscn" id="2_qmrvt"]
 [ext_resource type="PackedScene" uid="uid://cpqlqd8iprr3k" path="res://assets/Prefabs/UI/PF_InventoryBox.tscn" id="2_ydxjn"]
+[ext_resource type="Resource" uid="uid://b7mfw844gi5yb" path="res://assets/Resources/StartingLoadouts/RES_DefaultStartingLoadout.tres" id="3_gyahp"]
 
 [node name="InventoryUIState" type="Control" unique_id=839982300 node_paths=PackedStringArray("deck_view", "inventory_box_container")]
 layout_mode = 3
@@ -16,6 +17,7 @@ script = ExtResource("1_8wxro")
 card_scene = ExtResource("2_qclop")
 deck_view = NodePath("PanelContainer/InventoryDeckView")
 inventory_box_container = NodePath("PanelContainer/InventoryHBoxContainer")
+starting_loadout = ExtResource("3_gyahp")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=324391274]
 custom_minimum_size = Vector2(1350, 800)

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CardResource" format=3 uid="uid://denqx5ycqdhm4"]
+
+[ext_resource type="Texture2D" uid="uid://b0in550o5c4i6" path="res://assets/Art/Enemies/T_Triangle.png" id="1_23c4c"]
+[ext_resource type="Script" uid="uid://kc6opmo1shgd" path="res://assets/Scripts/BaseResources/GD_CardResource.gd" id="1_s4ocr"]
+
+[resource]
+script = ExtResource("1_s4ocr")
+damage = 2
+card_art_texture = ExtResource("1_23c4c")
+energy_cost = 1
+metadata/_custom_type_script = "uid://kc6opmo1shgd"

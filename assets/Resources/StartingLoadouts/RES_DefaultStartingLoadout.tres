@@ -2,7 +2,9 @@
 
 [ext_resource type="Script" uid="uid://kc6opmo1shgd" path="res://assets/Scripts/BaseResources/GD_CardResource.gd" id="1_t4hoa"]
 [ext_resource type="Script" uid="uid://cxye6rmww4fot" path="res://assets/Scripts/BaseResources/GD_StartingLoadout.gd" id="2_0ewe8"]
+[ext_resource type="Resource" uid="uid://denqx5ycqdhm4" path="res://assets/Resources/CardResources/RES_TestCard.tres" id="2_lfdnb"]
 
 [resource]
 script = ExtResource("2_0ewe8")
+deck_cards = Array[ExtResource("1_t4hoa")]([ExtResource("2_lfdnb"), ExtResource("2_lfdnb"), ExtResource("2_lfdnb"), ExtResource("2_lfdnb"), ExtResource("2_lfdnb"), ExtResource("2_lfdnb"), ExtResource("2_lfdnb")])
 metadata/_custom_type_script = "uid://cxye6rmww4fot"

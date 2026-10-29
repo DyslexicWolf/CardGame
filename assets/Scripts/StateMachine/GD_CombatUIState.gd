@@ -1,6 +1,8 @@
 class_name CombatUIState
 extends State
 
+@export var player_hand: PlayerHand
+
 var combat_ui_state: CombatUIState
 
 
@@ -19,13 +21,16 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _enter() -> void:
+	PlayerUI.entered_combat.emit()
 	set_process_unhandled_input(true)
 	get_tree().paused = false
 	combat_ui_state.show()
 	call_deferred("input_delay")
+	player_hand.rebuild_deck()
 
 
 func _exit() -> void:
+	PlayerUI.exited_combat.emit()
 	set_process_unhandled_input(false)
 	can_change_state = false
 	combat_ui_state.hide()

@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 PlayerUI="*uid://dqyhypxahe5p0"
 Inventory="*uid://buw0mb1mvjq26"
 
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+
 [display]
 
 window/size/viewport_width=1920
@@ -30,6 +34,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/custom_resource_previews/plugin.cfg")
+
+[gui]
+
+theme/custom_font="uid://cyksn77rqnisi"
 
 [input]
 
