@@ -2,5 +2,11 @@
 
 [ext_resource type="Script" uid="uid://b5ud8v2hu1s5c" path="res://assets/Scripts/Combat/GD_CombatManager.gd" id="1_15vpp"]
 
-[node name="Combat" type="Node2D" unique_id=564544485]
+[node name="Combat" type="Control" unique_id=883166475]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_15vpp")

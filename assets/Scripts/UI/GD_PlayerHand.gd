@@ -23,6 +23,10 @@ signal card_played(card: BaseCard, global_pos: Vector2) # hook for future mechan
 @export var draw_stagger := 0.08
 @export var relayout_duration := 0.2
 
+@export_group("RowSlots")
+@export var row_slots: Array[RowSlot] = []
+
+var _drag_origin_slot: RowSlot = null
 var _hand_cards: Array[BaseCard] = []
 var _deck: Array[CardResource] = []
 var _player_hand: Control
@@ -33,6 +37,8 @@ func _ready() -> void:
 	rebuild_deck()
 	if draw_button:
 		draw_button.pressed.connect(_on_draw_pressed)
+	for slot in row_slots:
+		slot.card_dropped.connect(_on_slot_card_dropped)
 
 
 func draw_cards(count: int) -> void:
@@ -69,6 +75,19 @@ func rebuild_deck() -> void:
 	_deck.shuffle()
 
 
+## Cards in slot order (top to bottom). Empty slots are null so indices stay meaningful.
+func get_row_cards() -> Array[BaseCard]:
+	var slots := row_slots.duplicate()
+	slots.sort_custom(
+		func(a: RowSlot, b: RowSlot) -> bool:
+			return a.global_position.y < b.global_position.y,
+	)
+	var cards: Array[BaseCard] = []
+	for slot: RowSlot in slots:
+		cards.append((slot as RowSlot).card)
+	return cards
+
+
 func _on_draw_pressed() -> void:
 	draw_cards(draw_amount)
 
@@ -77,8 +96,8 @@ func _spawn_card(resource: CardResource) -> BaseCard:
 	var card: BaseCard = card_scene.instantiate()
 	add_child(card)
 	card.setup(resource)
+	card.drag_started.connect(_on_card_drag_started)
 	card.drag_released.connect(_on_card_drag_released)
-	# Start above the hand, small and tilted.
 	card.apply_visual(_spawn_position(card), 0.0, Vector2.ONE * 0.5)
 	return card
 
@@ -116,8 +135,78 @@ func _layout(new_cards: Array[BaseCard] = []) -> void:
 		else:
 			card.go_home(relayout_duration)
 
+# Replace _on_card_drag_released with everything below
 
+
+func _on_card_drag_started(card: BaseCard) -> void:
+	# If the card was in a slot, free it right away.
+	_drag_origin_slot = _slot_holding(card)
+	if _drag_origin_slot:
+		_drag_origin_slot.clear()
+
+
+## Called by Godot's drop system through the slot's _drop_data.
+## Runs just before the card's drag-end notification.
+func _on_slot_card_dropped(slot: RowSlot, card: BaseCard) -> void:
+	var occupant := slot.card
+	if occupant and occupant != card:
+		# Swap: occupant goes to the slot the dragged card came from, or back to the hand.
+		if _drag_origin_slot:
+			_put_in_slot(occupant, _drag_origin_slot)
+		else:
+			_return_to_hand(occupant)
+	_put_in_slot(card, slot)
+
+
+## Called when the drag ends, after any drop. If no slot took the card, it flies back to the hand.
 func _on_card_drag_released(card: BaseCard, global_pos: Vector2) -> void:
 	card_played.emit(card, global_pos)
-	if card in _hand_cards:
-		_layout()
+	if _slot_holding(card) == null:
+		_return_to_hand(card)
+	_drag_origin_slot = null
+	_layout()
+
+
+func _put_in_slot(card: BaseCard, slot: RowSlot) -> void:
+	_hand_cards.erase(card)
+	slot.assign(card)
+	card.home_position = _slot_home_position(slot, card)
+	card.home_rotation = 0.0
+	card.home_z = 0
+	card.go_home(relayout_duration)
+
+
+func _return_to_hand(card: BaseCard) -> void:
+	if card not in _hand_cards:
+		_hand_cards.append(card)
+
+
+func _slot_holding(card: BaseCard) -> RowSlot:
+	for slot in row_slots:
+		if slot.card == card:
+			return slot
+	return null
+
+
+## Slot center in this hand's local space (cards are children of the hand).
+func _slot_home_position(slot: RowSlot, card: BaseCard) -> Vector2:
+	var center := slot.get_global_rect().get_center()
+	var local := get_global_transform().affine_inverse() * center
+	return local - card.size * 0.5
+
+
+## Fades out and disposes every card in the row slots, then empties the slots.
+func discard_row_cards(fade_duration := 0.25) -> void:
+	var any := false
+	for slot in row_slots:
+		var card := slot.card
+		if card == null:
+			continue
+		any = true
+		slot.clear()
+		_hand_cards.erase(card)
+		var t := card.create_tween()
+		t.tween_property(card, "modulate:a", 0.0, fade_duration)
+		t.finished.connect(card.dispose)
+	if any and fade_duration > 0.0:
+		await get_tree().create_timer(fade_duration).timeout

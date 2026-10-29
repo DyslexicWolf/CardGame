@@ -10,3 +10,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_e62dh")
+
+[node name="StartCombatButton" type="Button" parent="." unique_id=1169168370]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -192.0
+offset_top = -91.0
+offset_right = -47.0
+offset_bottom = -63.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Start Combat"
+
+[connection signal="pressed" from="StartCombatButton" to="." method="_on_start_combat_button_pressed"]

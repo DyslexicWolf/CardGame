@@ -9,6 +9,11 @@ signal drag_released(card: BaseCard, global_pos: Vector2)
 const HOVER_Z := 100
 const DRAG_Z := 200
 
+static var hovered_card: BaseCard = null
+static var dragging_card: BaseCard = null
+static var interaction_locked := false
+static var _arbitrated_frame := -1
+
 @export var art_texture: TextureRect
 @export var effect_icon: TextureRect
 
@@ -26,34 +31,38 @@ var _tween: Tween
 var _hovered := false
 
 
+static func set_interaction_locked(locked: bool) -> void:
+	interaction_locked = locked
+	if locked and is_instance_valid(hovered_card):
+		hovered_card._end_hover()
+
+
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	add_to_group("Cards")
 	pivot_offset = size * 0.5
 	resized.connect(_on_resized)
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
-	set_process(false)
-	set_process_input(false)
 
 
 func _process(_delta: float) -> void:
 	if is_dragging:
 		global_position = get_global_mouse_position() - size * 0.5
+		return
+	_arbitrate_hover()
 
 
 func _input(event: InputEvent) -> void:
-	if (
-		is_dragging and event is InputEventMouseButton \
-				and event.button_index == MOUSE_BUTTON_LEFT
-		and not event.pressed
-	):
-		_end_drag()
+	if is_dragging or interaction_locked:
+		return
 
-
-func _gui_input(event: InputEvent) -> void:
-	if (event.is_action_pressed("LeftFire") and not is_dragging):
-		accept_event()
+	if _hovered and event.is_action_pressed("LeftFire") and _contains_mouse():
+		get_viewport().set_input_as_handled()
 		_begin_drag()
+
+
+func _notification(what: int) -> void:
+	# Sent to every control when any drag ends (dropped or cancelled).
+	if what == NOTIFICATION_DRAG_END and is_dragging:
+		_end_drag()
 
 
 func setup(resource: CardResource) -> void:
@@ -89,19 +98,22 @@ func tween_visual(
 
 func go_home(duration: float, delay := 0.0) -> Tween:
 	z_index = home_z
-	_hovered = false
+	_release_hover_ownership()
 	return tween_visual(home_position, home_rotation, 1.0, duration, delay)
 
 
 func snap_home() -> void:
 	_kill_tween()
-	_hovered = false
+	_release_hover_ownership()
 	z_index = home_z
 	apply_visual(home_position, home_rotation, Vector2.ONE)
 
 
 func dispose() -> void:
 	_kill_tween()
+	_release_hover_ownership()
+	if dragging_card == self:
+		dragging_card = null
 	queue_free()
 
 
@@ -111,25 +123,78 @@ func _kill_tween() -> void:
 	_tween = null
 
 
-func _on_mouse_entered() -> void:
-	if is_dragging:
+## Runs once per frame (whichever card processes first does the work).
+## The current hovered card keeps the hover until the mouse is fully off its
+## visual rect. Only then is the topmost card under the mouse chosen.
+func _arbitrate_hover() -> void:
+	var frame := Engine.get_process_frames()
+	if frame == _arbitrated_frame:
 		return
+	_arbitrated_frame = frame
+
+	if interaction_locked:
+		return
+
+	if is_instance_valid(dragging_card):
+		return
+
+	var current: BaseCard = hovered_card if is_instance_valid(hovered_card) else null
+	if current and current._contains_mouse():
+		return
+
+	var best := _topmost_card_under_mouse()
+	if best == current:
+		return
+	if current:
+		current._end_hover()
+	if best:
+		best._start_hover()
+
+
+func _topmost_card_under_mouse() -> BaseCard:
+	var best: BaseCard = null
+	for node in get_tree().get_nodes_in_group("Cards"):
+		var card := node as BaseCard
+		if card == null or card.is_dragging or not card._contains_mouse():
+			continue
+		if best == null \
+				or card.z_index > best.z_index \
+				or (card.z_index == best.z_index and card.get_index() > best.get_index()):
+			best = card
+	return best
+
+
+## True if the mouse is inside this card's visual rect (scale/rotation/lift included).
+func _contains_mouse() -> bool:
+	var local := get_global_transform().affine_inverse() * get_global_mouse_position()
+	return Rect2(Vector2.ZERO, size).has_point(local)
+
+
+func _start_hover() -> void:
 	_hovered = true
+	hovered_card = self
 	z_index = HOVER_Z
 	tween_visual(home_position + Vector2(0, -hover_lift), 0.0, hover_scale, hover_duration)
 	hover_started.emit(self)
 
 
-func _on_mouse_exited() -> void:
-	if is_dragging or not _hovered:
+func _end_hover() -> void:
+	if not _hovered:
 		return
-	_hovered = false
 	go_home(hover_duration)
 	hover_ended.emit(self)
 
 
+func _release_hover_ownership() -> void:
+	_hovered = false
+	if hovered_card == self:
+		hovered_card = null
+
+
 func _begin_drag() -> void:
 	is_dragging = true
+	dragging_card = self
+	_release_hover_ownership()
 	_kill_tween()
 	z_index = DRAG_Z
 
@@ -137,15 +202,15 @@ func _begin_drag() -> void:
 	t.tween_property(self, "rotation", 0.0, 0.1)
 	t.tween_property(self, "scale", Vector2.ONE * hover_scale, 0.1)
 	_tween = t
-	set_process(true)
-	set_process_input(true)
+
+	force_drag(self, Control.new())
 	drag_started.emit(self)
 
 
 func _end_drag() -> void:
 	is_dragging = false
-	set_process(false)
-	set_process_input(false)
+	if dragging_card == self:
+		dragging_card = null
 	drag_released.emit(self, get_global_mouse_position())
 
 

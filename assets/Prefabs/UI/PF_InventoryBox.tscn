@@ -1,23 +1,15 @@
 [gd_scene format=3 uid="uid://cpqlqd8iprr3k"]
 
 [ext_resource type="Script" uid="uid://bjmdqhnfyaicb" path="res://assets/Scripts/UI/GD_InventoryBox.gd" id="1_kn3ux"]
+[ext_resource type="Texture2D" uid="uid://dgd4gtwhjit35" path="res://assets/Art/UI/T_EmptyBox.png" id="2_mxjpp"]
+[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="3_ymmi7"]
 
-[node name="InventoryBox" type="Control" unique_id=1795008268]
-custom_minimum_size = Vector2(135, 135)
-custom_maximum_size = Vector2(135, 135)
-layout_mode = 3
-anchors_preset = 0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ufoov"]
+texture = ExtResource("2_mxjpp")
+
+[node name="InventoryBox" type="PanelContainer" unique_id=947094739]
+custom_minimum_size = Vector2(150, 250)
+custom_maximum_size = Vector2(150, 250)
+theme_override_styles/panel = SubResource("StyleBoxTexture_ufoov")
 script = ExtResource("1_kn3ux")
-
-[node name="CardTexture" type="TextureRect" parent="." unique_id=58173640]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="FrameTexture" type="TextureRect" parent="." unique_id=1431516119]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+card_scene = ExtResource("3_ymmi7")

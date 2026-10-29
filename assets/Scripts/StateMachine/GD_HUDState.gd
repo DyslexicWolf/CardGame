@@ -33,5 +33,5 @@ func _exit() -> void:
 	hud_state.hide()
 
 
-func _state_physics_process(_delta: float) -> void:
-	pass
+func _on_start_combat_button_pressed() -> void:
+	transitioned.emit(self, "CombatUIState")

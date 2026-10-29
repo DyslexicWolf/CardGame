@@ -1,6 +1,9 @@
 class_name CombatUIState
 extends State
 
+signal end_turn_requested
+
+@export var end_turn_button: Button
 @export var player_hand: PlayerHand
 
 var combat_ui_state: CombatUIState
@@ -36,5 +39,9 @@ func _exit() -> void:
 	combat_ui_state.hide()
 
 
-func _state_physics_process(_delta: float) -> void:
-	pass
+func _on_end_turn_button_pressed() -> void:
+	end_turn_requested.emit()
+
+
+func set_end_turn_enabled(enabled: bool) -> void:
+	end_turn_button.disabled = not enabled
