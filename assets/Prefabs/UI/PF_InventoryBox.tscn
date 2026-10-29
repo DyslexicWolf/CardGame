@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://cpqlqd8iprr3k"]
 
-[ext_resource type="Script" uid="uid://bx3c1uknfkpcc" path="res://Scripts/InventoryBox.gd" id="1_kn3ux"]
-[ext_resource type="Texture2D" uid="uid://b7fntpjepnvc8" path="res://Textures/TempFrame.png" id="2_h4uvq"]
+[ext_resource type="Script" uid="uid://bjmdqhnfyaicb" path="res://assets/Scripts/UI/GD_InventoryBox.gd" id="1_kn3ux"]
 
 [node name="InventoryBox" type="Control" unique_id=1795008268]
 custom_minimum_size = Vector2(135, 135)
@@ -22,4 +21,3 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_h4uvq")

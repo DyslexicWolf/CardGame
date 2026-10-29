@@ -1,8 +1,11 @@
 [gd_scene format=3 uid="uid://dm1013ql5oixo"]
 
 [ext_resource type="Script" uid="uid://c348p8lkbi177" path="res://assets/Scripts/StateMachine/GD_InventoryUIState.gd" id="1_8wxro"]
+[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="2_qclop"]
+[ext_resource type="PackedScene" uid="uid://dbll7yrhb02fl" path="res://assets/Prefabs/UI/PF_InventoryDeckView.tscn" id="2_qmrvt"]
+[ext_resource type="PackedScene" uid="uid://cpqlqd8iprr3k" path="res://assets/Prefabs/UI/PF_InventoryBox.tscn" id="2_ydxjn"]
 
-[node name="InventoryUIState" type="Control" unique_id=839982300]
+[node name="InventoryUIState" type="Control" unique_id=839982300 node_paths=PackedStringArray("deck_view", "inventory_box_container")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,6 +13,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_8wxro")
+card_scene = ExtResource("2_qclop")
+deck_view = NodePath("PanelContainer/InventoryDeckView")
+inventory_box_container = NodePath("PanelContainer/InventoryHBoxContainer")
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=324391274]
 custom_minimum_size = Vector2(1350, 800)
@@ -25,3 +31,26 @@ offset_right = 675.0
 offset_bottom = 400.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="InventoryHBoxContainer" type="HBoxContainer" parent="PanelContainer" unique_id=1493079531]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 10
+
+[node name="InventoryBox" parent="PanelContainer/InventoryHBoxContainer" unique_id=1795008268 instance=ExtResource("2_ydxjn")]
+layout_mode = 2
+
+[node name="InventoryBox2" parent="PanelContainer/InventoryHBoxContainer" unique_id=1343149470 instance=ExtResource("2_ydxjn")]
+layout_mode = 2
+
+[node name="InventoryBox3" parent="PanelContainer/InventoryHBoxContainer" unique_id=1808065755 instance=ExtResource("2_ydxjn")]
+layout_mode = 2
+
+[node name="InventoryBox4" parent="PanelContainer/InventoryHBoxContainer" unique_id=142360120 instance=ExtResource("2_ydxjn")]
+layout_mode = 2
+
+[node name="InventoryDeckView" parent="PanelContainer" unique_id=1029259835 instance=ExtResource("2_qmrvt")]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0

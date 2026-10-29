@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://dbll7yrhb02fl"]
+
+[ext_resource type="Script" uid="uid://bogjfxk5jhqgu" path="res://assets/Scripts/UI/GD_InventoryDeckView.gd" id="1_xrvkc"]
+[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="2_lon21"]
+
+[node name="InventoryDeckView" type="Control" unique_id=1029259835]
+custom_minimum_size = Vector2(800, 300)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_xrvkc")
+card_scene = ExtResource("2_lon21")

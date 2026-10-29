@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="StartingLoadout" format=3 uid="uid://b7mfw844gi5yb"]
+
+[ext_resource type="Script" uid="uid://kc6opmo1shgd" path="res://assets/Scripts/BaseResources/GD_CardResource.gd" id="1_t4hoa"]
+[ext_resource type="Script" uid="uid://cxye6rmww4fot" path="res://assets/Scripts/BaseResources/GD_StartingLoadout.gd" id="2_0ewe8"]
+
+[resource]
+script = ExtResource("2_0ewe8")
+metadata/_custom_type_script = "uid://cxye6rmww4fot"

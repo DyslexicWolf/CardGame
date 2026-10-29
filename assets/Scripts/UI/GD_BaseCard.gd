@@ -93,6 +93,13 @@ func go_home(duration: float, delay := 0.0) -> Tween:
 	return tween_visual(home_position, home_rotation, 1.0, duration, delay)
 
 
+func snap_home() -> void:
+	_kill_tween()
+	_hovered = false
+	z_index = home_z
+	apply_visual(home_position, home_rotation, Vector2.ONE)
+
+
 func dispose() -> void:
 	_kill_tween()
 	queue_free()
