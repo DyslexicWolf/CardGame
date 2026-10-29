@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dqyhypxahe5p0"]
 
 [ext_resource type="Script" uid="uid://jkih65iqqlre" path="res://assets/Scripts/Singletons/GD_PlayerUI.gd" id="1_3m6sk"]
+[ext_resource type="PackedScene" uid="uid://hcegjf3hjkni" path="res://assets/Prefabs/UIStates/PF_StartScreenUIState.tscn" id="2_2qpwr"]
 [ext_resource type="PackedScene" uid="uid://cntmc4mm70023" path="res://assets/Prefabs/UIStates/PF_HUDState.tscn" id="2_ubxmo"]
 [ext_resource type="PackedScene" uid="uid://cjvrikioq711v" path="res://assets/Prefabs/UIStates/PF_CombatUIState.tscn" id="3_2qpwr"]
 [ext_resource type="PackedScene" uid="uid://dm1013ql5oixo" path="res://assets/Prefabs/UIStates/PF_InventoryUIState.tscn" id="4_xdesr"]
@@ -9,9 +10,12 @@
 
 [node name="PlayerUI" type="CanvasLayer" unique_id=1459887254 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_3m6sk")
-initial_state = NodePath("HUDState")
+initial_state = NodePath("StartScreenUIState")
+
+[node name="StartScreenUIState" parent="." unique_id=654954145 instance=ExtResource("2_2qpwr")]
 
 [node name="HUDState" parent="." unique_id=1722464567 instance=ExtResource("2_ubxmo")]
+visible = false
 
 [node name="CombatUIState" parent="." unique_id=711801117 instance=ExtResource("3_2qpwr")]
 visible = false

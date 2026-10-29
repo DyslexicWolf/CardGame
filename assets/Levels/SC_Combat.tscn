@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c3eq3464qxp1e"]
+
+[ext_resource type="Script" uid="uid://b5ud8v2hu1s5c" path="res://assets/Scripts/Combat/GD_CombatManager.gd" id="1_15vpp"]
+
+[node name="Combat" type="Node2D" unique_id=564544485]
+script = ExtResource("1_15vpp")

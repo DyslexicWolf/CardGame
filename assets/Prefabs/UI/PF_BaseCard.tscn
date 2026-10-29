@@ -1,29 +1,24 @@
 [gd_scene format=3 uid="uid://xkxw2o7hnwgj"]
 
+[ext_resource type="Texture2D" uid="uid://ck1pu3wy4vc50" path="res://assets/Art/UI/T_BaseCardBackground.png" id="1_swlyj"]
 [ext_resource type="Texture2D" uid="uid://xgx01b7yffr7" path="res://icon.svg" id="1_trcpu"]
 [ext_resource type="Script" uid="uid://blcq4bje1l7qe" path="res://assets/Scripts/UI/GD_BaseCard.gd" id="2_plsjp"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ufoov"]
-texture = ExtResource("1_trcpu")
+texture = ExtResource("1_swlyj")
 
-[node name="BaseCard" type="PanelContainer" unique_id=2047914077]
+[node name="BaseCard" type="PanelContainer" unique_id=2047914077 node_paths=PackedStringArray("art_texture", "effect_icon")]
 custom_minimum_size = Vector2(150, 250)
 theme_override_styles/panel = SubResource("StyleBoxTexture_ufoov")
 script = ExtResource("2_plsjp")
+art_texture = NodePath("MarginContainer/VBoxContainer/ArtTexture")
+effect_icon = NodePath("MarginContainer/VBoxContainer/HBoxContainer/EffectIcon")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=191419200]
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1828332661]
 layout_mode = 2
-
-[node name="NameLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer" unique_id=1504176776]
-layout_mode = 2
-text = "Base Card"
-fit_content = true
-autowrap_mode = 0
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="ArtTexture" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=492567260]
 layout_mode = 2

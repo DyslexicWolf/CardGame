@@ -11,12 +11,14 @@ config_version=5
 [application]
 
 config/name="CardGame"
+run/main_scene="uid://cba2ktyprdeav"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 PlayerUI="*uid://dqyhypxahe5p0"
+Inventory="*uid://buw0mb1mvjq26"
 
 [display]
 
@@ -27,7 +29,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg")
+enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/custom_resource_previews/plugin.cfg")
 
 [input]
 
@@ -64,4 +66,5 @@ Inventory={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"

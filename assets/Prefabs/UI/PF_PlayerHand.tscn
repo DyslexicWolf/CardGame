@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://csvxc575byp7d"]
+
+[ext_resource type="Script" uid="uid://dm55ocofgeyhb" path="res://assets/Scripts/UI/GD_PlayerHand.gd" id="1_8l4qc"]
+
+[node name="PlayerHand" type="Control" unique_id=1754510952]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -111.0
+offset_bottom = -111.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("1_8l4qc")

@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://cba2ktyprdeav"]
+
+[ext_resource type="Script" uid="uid://hnc3bjdy1skc" path="res://assets/Scripts/UI/GD_StartScreen.gd" id="1_8h4uu"]
+
+[node name="StartScreen" type="Control" unique_id=1712564403]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8h4uu")
+game_scene_path = "uid://c3eq3464qxp1e"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=678923755]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -45.0
+offset_top = -59.0
+offset_right = 45.0
+offset_bottom = 59.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="StartButton" type="Button" parent="VBoxContainer" unique_id=538283910]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Start"
+
+[node name="QuitButton" type="Button" parent="VBoxContainer" unique_id=146824975]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = "Quit"
+
+[connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
