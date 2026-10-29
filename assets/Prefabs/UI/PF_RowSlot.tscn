@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bx06j6jxl5jrk"]
+
+[ext_resource type="Texture2D" uid="uid://dgd4gtwhjit35" path="res://assets/Art/UI/T_EmptyBox.png" id="1_vcjy0"]
+[ext_resource type="Script" uid="uid://dvp5ylnd74u23" path="res://assets/Scripts/UI/GD_RowSlot.gd" id="2_vcjy0"]
+[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="3_bo1ag"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8h4uu"]
+texture = ExtResource("1_vcjy0")
+
+[node name="RowSlot" type="PanelContainer" unique_id=1441602114]
+custom_minimum_size = Vector2(150, 250)
+custom_maximum_size = Vector2(150, 250)
+theme_override_styles/panel = SubResource("StyleBoxTexture_8h4uu")
+script = ExtResource("2_vcjy0")
+
+[node name="BaseCard" parent="." unique_id=2047914077 instance=ExtResource("3_bo1ag")]
+visible = false
+layout_mode = 2

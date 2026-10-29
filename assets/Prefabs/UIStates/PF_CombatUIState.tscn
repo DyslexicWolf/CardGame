@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://1f1aqy2nytxw" path="res://assets/Scripts/StateMachine/GD_CombatUIState.gd" id="1_f63og"]
 [ext_resource type="Texture2D" uid="uid://xrajguiix2qs" path="res://assets/Art/UI/T_DamageBox.png" id="2_xqn58"]
-[ext_resource type="PackedScene" uid="uid://bx06j6jxl5jrk" path="res://assets/Prefabs/UI/PF_ColumnSlot.tscn" id="3_8gw0f"]
+[ext_resource type="PackedScene" uid="uid://bx06j6jxl5jrk" path="res://assets/Prefabs/UI/PF_RowSlot.tscn" id="3_8gw0f"]
 [ext_resource type="Texture2D" uid="uid://bh82ja3nn5feb" path="res://assets/Art/UI/T_ActivationsBox.png" id="3_lag2g"]
 [ext_resource type="PackedScene" uid="uid://csvxc575byp7d" path="res://assets/Prefabs/UI/PF_PlayerHand.tscn" id="4_282om"]
 [ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="5_hpe6p"]
@@ -97,28 +97,28 @@ theme_override_constants/separation = 15
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ColumnSlot" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1441602114 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1441602114 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot2" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1278723011 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot2" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1278723011 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot3" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1360195745 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot3" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1360195745 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot4" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1961417255 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot4" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1961417255 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot5" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=314617773 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot5" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=314617773 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot6" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1367448499 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot6" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1367448499 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot7" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1993231267 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot7" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1993231267 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="ColumnSlot8" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1671080728 instance=ExtResource("3_8gw0f")]
+[node name="RowSlot8" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1671080728 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
 [node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button") instance=ExtResource("4_282om")]
