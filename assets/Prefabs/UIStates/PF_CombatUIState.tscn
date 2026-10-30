@@ -1,13 +1,15 @@
 [gd_scene format=3 uid="uid://cjvrikioq711v"]
 
-[ext_resource type="Script" uid="uid://1f1aqy2nytxw" path="res://assets/Scripts/StateMachine/GD_CombatUIState.gd" id="1_f63og"]
-[ext_resource type="Texture2D" uid="uid://xrajguiix2qs" path="res://assets/Art/UI/T_DamageBox.png" id="2_xqn58"]
-[ext_resource type="PackedScene" uid="uid://bx06j6jxl5jrk" path="res://assets/Prefabs/UI/PF_RowSlot.tscn" id="3_8gw0f"]
-[ext_resource type="Texture2D" uid="uid://bh82ja3nn5feb" path="res://assets/Art/UI/T_ActivationsBox.png" id="3_lag2g"]
-[ext_resource type="PackedScene" uid="uid://csvxc575byp7d" path="res://assets/Prefabs/UI/PF_PlayerHand.tscn" id="4_282om"]
-[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="5_hpe6p"]
+[ext_resource type="Script" uid="uid://1f1aqy2nytxw" path="res://Assets/Scripts/StateMachine/GD_CombatUIState.gd" id="1_f63og"]
+[ext_resource type="Script" uid="uid://b5ud8v2hu1s5c" path="res://Assets/Scripts/Combat/GD_CombatManager.gd" id="2_4tnxl"]
+[ext_resource type="Texture2D" uid="uid://xrajguiix2qs" path="res://Assets/Art/UI/T_DamageBox.png" id="2_xqn58"]
+[ext_resource type="PackedScene" uid="uid://bx06j6jxl5jrk" path="res://Assets/Prefabs/UI/PF_RowSlot.tscn" id="3_8gw0f"]
+[ext_resource type="Texture2D" uid="uid://bh82ja3nn5feb" path="res://Assets/Art/UI/T_ActivationsBox.png" id="3_lag2g"]
+[ext_resource type="PackedScene" uid="uid://csvxc575byp7d" path="res://Assets/Prefabs/UI/PF_PlayerHand.tscn" id="4_282om"]
+[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://Assets/Prefabs/UI/PF_BaseCard.tscn" id="5_hpe6p"]
+[ext_resource type="PackedScene" uid="uid://cuo88p0wgcg1g" path="res://Assets/Prefabs/Enemies/PF_TriangleEnemy.tscn" id="8_2posq"]
 
-[node name="CombatUIState" type="Control" unique_id=711801117 node_paths=PackedStringArray("player_hand")]
+[node name="CombatUIState" type="Control" unique_id=711801117 node_paths=PackedStringArray("end_turn_button", "player_hand")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,7 +18,19 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_f63og")
+end_turn_button = NodePath("EndTurnButton")
 player_hand = NodePath("PlayerHand")
+
+[node name="CombatManager" type="Control" parent="." unique_id=922375174 node_paths=PackedStringArray("player_hand", "enemy", "combat_ui_state")]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("2_4tnxl")
+player_hand = NodePath("../PlayerHand")
+enemy = NodePath("../TriangleEnemy")
+combat_ui_state = NodePath("..")
 
 [node name="NumbersHBoxContainer" type="HBoxContainer" parent="." unique_id=438555337]
 layout_mode = 1
@@ -121,10 +135,11 @@ layout_mode = 2
 [node name="RowSlot8" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1671080728 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button") instance=ExtResource("4_282om")]
+[node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button", "row_slots") instance=ExtResource("4_282om")]
 layout_mode = 1
 card_scene = ExtResource("5_hpe6p")
 draw_button = NodePath("../DrawButton")
+row_slots = [NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot2"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot3"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot4"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot5"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot6"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot7"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot8")]
 
 [node name="DrawButton" type="Button" parent="." unique_id=575670881]
 layout_mode = 1
@@ -158,5 +173,16 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 25
 text = "EndTurn
 "
+
+[node name="TriangleEnemy" parent="." unique_id=2104946389 instance=ExtResource("8_2posq")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [connection signal="pressed" from="EndTurnButton" to="." method="_on_end_turn_button_pressed"]

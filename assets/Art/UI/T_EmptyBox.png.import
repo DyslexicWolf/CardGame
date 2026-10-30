@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dgd4gtwhjit35"
-path="res://.godot/imported/T_EmptyBox.png-7df53931ccfc10b90a86b97aef998fa1.ctex"
+path="res://.godot/imported/T_EmptyBox.png-66692d9e52a5fc0f6958ca54b0d740a4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Art/UI/T_EmptyBox.png"
-dest_files=["res://.godot/imported/T_EmptyBox.png-7df53931ccfc10b90a86b97aef998fa1.ctex"]
+source_file="res://Assets/Art/UI/T_EmptyBox.png"
+dest_files=["res://.godot/imported/T_EmptyBox.png-66692d9e52a5fc0f6958ca54b0d740a4.ctex"]
 
 [params]
 

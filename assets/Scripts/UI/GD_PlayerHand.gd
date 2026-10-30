@@ -30,6 +30,7 @@ var _drag_origin_slot: RowSlot = null
 var _hand_cards: Array[BaseCard] = []
 var _deck: Array[CardResource] = []
 var _player_hand: Control
+var _drag_origin_index := -1
 
 
 func _ready() -> void:
@@ -37,8 +38,6 @@ func _ready() -> void:
 	rebuild_deck()
 	if draw_button:
 		draw_button.pressed.connect(_on_draw_pressed)
-	for slot in row_slots:
-		slot.card_dropped.connect(_on_slot_card_dropped)
 
 
 func draw_cards(count: int) -> void:
@@ -139,45 +138,67 @@ func _layout(new_cards: Array[BaseCard] = []) -> void:
 
 
 func _on_card_drag_started(card: BaseCard) -> void:
-	# If the card was in a slot, free it right away.
 	_drag_origin_slot = _slot_holding(card)
+	_drag_origin_index = _hand_cards.find(card)
+	card.is_slotted = false
 	if _drag_origin_slot:
 		_drag_origin_slot.clear()
 
-
-## Called by Godot's drop system through the slot's _drop_data.
-## Runs just before the card's drag-end notification.
-func _on_slot_card_dropped(slot: RowSlot, card: BaseCard) -> void:
-	var occupant := slot.card
-	if occupant and occupant != card:
-		# Swap: occupant goes to the slot the dragged card came from, or back to the hand.
-		if _drag_origin_slot:
-			_put_in_slot(occupant, _drag_origin_slot)
-		else:
-			_return_to_hand(occupant)
-	_put_in_slot(card, slot)
+	# The card leaves the hand now, so the fan closes the gap immediately.
+	_hand_cards.erase(card)
+	_layout()
 
 
-## Called when the drag ends, after any drop. If no slot took the card, it flies back to the hand.
+## Runs after the drag ends. Decides where the card goes based on the mouse position.
 func _on_card_drag_released(card: BaseCard, global_pos: Vector2) -> void:
 	card_played.emit(card, global_pos)
-	if _slot_holding(card) == null:
-		_return_to_hand(card)
+
+	var returned := false
+	var slot := _slot_at(global_pos)
+	if slot:
+		var occupant := slot.card
+		if occupant and occupant != card:
+			if _drag_origin_slot:
+				_put_in_slot(occupant, _drag_origin_slot)
+			else:
+				_return_to_hand(occupant)
+		_put_in_slot(card, slot)
+	else:
+		_return_to_hand(card, _drag_origin_index)
+		returned = true
+
 	_drag_origin_slot = null
+	_drag_origin_index = -1
 	_layout()
+	if returned:
+		card.fly_home(relayout_duration) # home values were just set by _layout
+
+
+func _slot_at(global_pos: Vector2) -> RowSlot:
+	for slot in row_slots:
+		if slot.get_global_rect().has_point(global_pos):
+			return slot
+	return null
 
 
 func _put_in_slot(card: BaseCard, slot: RowSlot) -> void:
 	_hand_cards.erase(card)
 	slot.assign(card)
+	card.is_slotted = true
 	card.home_position = _slot_home_position(slot, card)
 	card.home_rotation = 0.0
-	card.home_z = 0
+	card.home_z = BaseCard.SLOT_Z
 	card.go_home(relayout_duration)
 
 
-func _return_to_hand(card: BaseCard) -> void:
-	if card not in _hand_cards:
+## index = -1 appends. Otherwise the card goes back to where it was in the fan.
+func _return_to_hand(card: BaseCard, index := -1) -> void:
+	card.is_slotted = false
+	if card in _hand_cards:
+		return
+	if index >= 0 and index <= _hand_cards.size():
+		_hand_cards.insert(index, card)
+	else:
 		_hand_cards.append(card)
 
 

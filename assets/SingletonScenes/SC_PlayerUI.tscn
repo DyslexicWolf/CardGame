@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://dqyhypxahe5p0"]
 
-[ext_resource type="Script" uid="uid://jkih65iqqlre" path="res://assets/Scripts/Singletons/GD_PlayerUI.gd" id="1_3m6sk"]
-[ext_resource type="PackedScene" uid="uid://hcegjf3hjkni" path="res://assets/Prefabs/UIStates/PF_StartScreenUIState.tscn" id="2_2qpwr"]
-[ext_resource type="PackedScene" uid="uid://cntmc4mm70023" path="res://assets/Prefabs/UIStates/PF_HUDState.tscn" id="2_ubxmo"]
-[ext_resource type="PackedScene" uid="uid://cjvrikioq711v" path="res://assets/Prefabs/UIStates/PF_CombatUIState.tscn" id="3_2qpwr"]
-[ext_resource type="PackedScene" uid="uid://dm1013ql5oixo" path="res://assets/Prefabs/UIStates/PF_InventoryUIState.tscn" id="4_xdesr"]
-[ext_resource type="PackedScene" uid="uid://dj86kwldl0ter" path="res://assets/Prefabs/UIStates/PF_LootUIState.tscn" id="5_2uydu"]
-[ext_resource type="PackedScene" uid="uid://b7oufb31iihli" path="res://assets/Prefabs/UIStates/PF_PauseUIState.tscn" id="6_8b3mn"]
+[ext_resource type="Script" uid="uid://jkih65iqqlre" path="res://Assets/Scripts/Singletons/GD_PlayerUI.gd" id="1_3m6sk"]
+[ext_resource type="PackedScene" uid="uid://hcegjf3hjkni" path="res://Assets/Prefabs/UIStates/PF_StartScreenUIState.tscn" id="2_2qpwr"]
+[ext_resource type="PackedScene" uid="uid://cntmc4mm70023" path="res://Assets/Prefabs/UIStates/PF_HUDState.tscn" id="2_ubxmo"]
+[ext_resource type="PackedScene" uid="uid://cjvrikioq711v" path="res://Assets/Prefabs/UIStates/PF_CombatUIState.tscn" id="3_2qpwr"]
+[ext_resource type="PackedScene" uid="uid://dm1013ql5oixo" path="res://Assets/Prefabs/UIStates/PF_InventoryUIState.tscn" id="4_xdesr"]
+[ext_resource type="PackedScene" uid="uid://dj86kwldl0ter" path="res://Assets/Prefabs/UIStates/PF_LootUIState.tscn" id="5_2uydu"]
+[ext_resource type="PackedScene" uid="uid://b7oufb31iihli" path="res://Assets/Prefabs/UIStates/PF_PauseUIState.tscn" id="6_8b3mn"]
 
 [node name="PlayerUI" type="CanvasLayer" unique_id=1459887254 node_paths=PackedStringArray("initial_state")]
 script = ExtResource("1_3m6sk")

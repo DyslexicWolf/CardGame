@@ -1,5 +1,5 @@
 class_name Enemy
-extends Node
+extends Control
 
 signal health_changed(current_hp: int, max_health: int)
 signal damage_taken(amount: int, type: CardResource.DamageType)

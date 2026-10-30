@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cuo88p0wgcg1g"]
+
+[ext_resource type="Script" uid="uid://bwc68dgw1374e" path="res://Assets/Scripts/Enemies/GD_Enemy.gd" id="1_dwixc"]
+[ext_resource type="Texture2D" uid="uid://b0in550o5c4i6" path="res://Assets/Art/Enemies/T_Triangle.png" id="2_koceo"]
+
+[node name="TriangleEnemy" type="Control" unique_id=2104946389]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_dwixc")
+
+[node name="EnemyTexture" type="TextureRect" parent="." unique_id=977027076]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_koceo")

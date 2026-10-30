@@ -7,6 +7,7 @@ signal drag_started(card: BaseCard)
 signal drag_released(card: BaseCard, global_pos: Vector2)
 
 const HOVER_Z := 100
+const SLOT_Z := 150
 const DRAG_Z := 200
 
 static var hovered_card: BaseCard = null
@@ -27,6 +28,8 @@ var home_position := Vector2.ZERO
 var home_rotation := 0.0
 var home_z := 0
 var is_dragging := false
+var is_slotted := false
+var is_flying := false
 var _tween: Tween
 var _hovered := false
 
@@ -102,6 +105,17 @@ func go_home(duration: float, delay := 0.0) -> Tween:
 	return tween_visual(home_position, home_rotation, 1.0, duration, delay)
 
 
+## Like go_home, but the card can't be hovered until it arrives.
+func fly_home(duration: float, delay := 0.0) -> Tween:
+	var t := go_home(duration, delay)
+	is_flying = true
+	t.finished.connect(
+		func() -> void:
+			is_flying = false,
+	)
+	return t
+
+
 func snap_home() -> void:
 	_kill_tween()
 	_release_hover_ownership()
@@ -121,11 +135,9 @@ func _kill_tween() -> void:
 	if _tween and _tween.is_valid():
 		_tween.kill()
 	_tween = null
+	is_flying = false
 
 
-## Runs once per frame (whichever card processes first does the work).
-## The current hovered card keeps the hover until the mouse is fully off its
-## visual rect. Only then is the topmost card under the mouse chosen.
 func _arbitrate_hover() -> void:
 	var frame := Engine.get_process_frames()
 	if frame == _arbitrated_frame:
@@ -134,15 +146,16 @@ func _arbitrate_hover() -> void:
 
 	if interaction_locked:
 		return
-
 	if is_instance_valid(dragging_card):
 		return
 
 	var current: BaseCard = hovered_card if is_instance_valid(hovered_card) else null
-	if current and current._contains_mouse():
+	var best := _topmost_card_under_mouse()
+
+	# Sticky hover, unless a slotted card is under the mouse (those take priority).
+	if current and current._contains_mouse() and not (best and best.is_slotted):
 		return
 
-	var best := _topmost_card_under_mouse()
 	if best == current:
 		return
 	if current:
@@ -151,11 +164,32 @@ func _arbitrate_hover() -> void:
 		best._start_hover()
 
 
+func _start_hover() -> void:
+	if is_flying or is_dragging:
+		return
+	_hovered = true
+	hovered_card = self
+	if not is_slotted:
+		z_index = HOVER_Z
+		tween_visual(home_position + Vector2(0, -hover_lift), 0.0, hover_scale, hover_duration)
+	hover_started.emit(self)
+
+
+func _end_hover() -> void:
+	if not _hovered:
+		return
+	if is_slotted:
+		_release_hover_ownership()
+	else:
+		go_home(hover_duration)
+	hover_ended.emit(self)
+
+
 func _topmost_card_under_mouse() -> BaseCard:
 	var best: BaseCard = null
 	for node in get_tree().get_nodes_in_group("Cards"):
 		var card := node as BaseCard
-		if card == null or card.is_dragging or not card._contains_mouse():
+		if card == null or card.is_dragging or card.is_flying or not card._contains_mouse():
 			continue
 		if best == null \
 				or card.z_index > best.z_index \
@@ -168,21 +202,6 @@ func _topmost_card_under_mouse() -> BaseCard:
 func _contains_mouse() -> bool:
 	var local := get_global_transform().affine_inverse() * get_global_mouse_position()
 	return Rect2(Vector2.ZERO, size).has_point(local)
-
-
-func _start_hover() -> void:
-	_hovered = true
-	hovered_card = self
-	z_index = HOVER_Z
-	tween_visual(home_position + Vector2(0, -hover_lift), 0.0, hover_scale, hover_duration)
-	hover_started.emit(self)
-
-
-func _end_hover() -> void:
-	if not _hovered:
-		return
-	go_home(hover_duration)
-	hover_ended.emit(self)
 
 
 func _release_hover_ownership() -> void:

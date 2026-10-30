@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b0in550o5c4i6"
-path="res://.godot/imported/T_Triangle.png-2cd5ff731d0ef9cea6dc7819a38aeaff.ctex"
+path="res://.godot/imported/T_Triangle.png-f8cc67b7c2393b2062933544a088cfb3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Art/Enemies/T_Triangle.png"
-dest_files=["res://.godot/imported/T_Triangle.png-2cd5ff731d0ef9cea6dc7819a38aeaff.ctex"]
+source_file="res://Assets/Art/Enemies/T_Triangle.png"
+dest_files=["res://.godot/imported/T_Triangle.png-f8cc67b7c2393b2062933544a088cfb3.ctex"]
 
 [params]
 

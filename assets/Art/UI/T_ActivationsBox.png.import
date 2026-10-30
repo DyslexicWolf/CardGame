@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bh82ja3nn5feb"
-path="res://.godot/imported/T_ActivationsBox.png-247e10764db814799793e6634fc23bf8.ctex"
+path="res://.godot/imported/T_ActivationsBox.png-1317497b30da3989b07ad8553486ed68.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Art/UI/T_ActivationsBox.png"
-dest_files=["res://.godot/imported/T_ActivationsBox.png-247e10764db814799793e6634fc23bf8.ctex"]
+source_file="res://Assets/Art/UI/T_ActivationsBox.png"
+dest_files=["res://.godot/imported/T_ActivationsBox.png-1317497b30da3989b07ad8553486ed68.ctex"]
 
 [params]
 
