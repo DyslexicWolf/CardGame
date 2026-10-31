@@ -8,15 +8,18 @@ enum DamageType {
 	LIGHT,
 	DARK,
 }
+enum CardType {
+	SPELL_CIRCLE,
+	SPELL_SIGIL,
+}
 
-@export var damage: int
+@export var card_name := ""
 @export var card_art_texture: Texture2D
-@export var energy_cost: int
-@export var damage_type: DamageType
-##Can be left empty, then only damage will happen
-@export var effect: CardEffect
-## How many times this card can be re-triggered per turn by other cards' effects.
-@export var max_retriggers := 1
+@export_multiline var description := ""
+
+
+func get_card_type() -> CardType:
+	return CardType.SPELL_CIRCLE
 
 
 func _get_custom_preview_texture() -> Texture2D:

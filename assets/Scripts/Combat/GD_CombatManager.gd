@@ -11,6 +11,7 @@ signal resolution_finished(enemy_died: bool)
 @export var enemy: Enemy
 @export var combat_ui_state: CombatUIState
 
+@export var projectile_delay := 0.12
 @export_group("Resolution")
 @export var activation_delay := 0.35
 @export var pop_duration := 0.12
@@ -74,8 +75,10 @@ func resolve_turn() -> void:
 ## One activation: pop -> damage -> pause -> effect -> settle.
 ## `source` is the card that triggered this one (null for the normal row pass).
 func activate_card(card: BaseCard, source: BaseCard = null) -> void:
-	if _ctx.aborted or not is_instance_valid(card) or card.card_resource == null:
+	var circle := card.card_resource as SpellCircleResource if is_instance_valid(card) else null
+	if _ctx.aborted or circle == null:
 		return
+
 	if _ctx.total_activations >= max_activations:
 		push_warning("Activation cap reached, stopping resolution.")
 		_ctx.aborted = true
@@ -85,9 +88,8 @@ func activate_card(card: BaseCard, source: BaseCard = null) -> void:
 
 	var is_retrigger := source != null
 	if is_retrigger:
-		# Per-card cap: a card can only be re-triggered max_retriggers times per turn.
 		var used: int = _ctx.retrigger_counts.get(card, 0)
-		if used >= card.card_resource.max_retriggers:
+		if used >= circle.max_retriggers:
 			return
 		_ctx.retrigger_counts[card] = used + 1
 
@@ -97,10 +99,16 @@ func activate_card(card: BaseCard, source: BaseCard = null) -> void:
 	totals_changed.emit(_ctx.total_damage, _ctx.total_activations)
 
 	await _pop_card(card)
-	deal_damage(card.card_resource.damage, card.card_resource.damage_type, card)
+	var spell := circle.build_spell(card.get_sigil_resources())
+	for p in spell.projectiles:
+		if _ctx.aborted:
+			break
+		deal_damage(spell.damage, spell.damage_type, card)
+		if p < spell.projectiles - 1:
+			await _wait(projectile_delay)
 	await _wait(activation_delay)
 
-	var effect := card.card_resource.effect
+	var effect := circle.effect
 	if effect != null and not _ctx.aborted and (not is_retrigger or retriggers_run_effects):
 		@warning_ignore("redundant_await")
 		await effect.execute(_ctx, card)
@@ -123,15 +131,7 @@ func deal_damage(amount: int, type: CardResource.DamageType, source: BaseCard) -
 
 func _pop_card(card: BaseCard) -> void:
 	card.z_index = BaseCard.HOVER_Z
-	card.tween_visual(
-		card.home_position + Vector2(0, -pop_lift),
-		0.0,
-		pop_scale,
-		pop_duration,
-		0.0,
-		Tween.EASE_OUT,
-		Tween.TRANS_BACK,
-	)
+	card.tween_visual(card.home_position + Vector2(0, -pop_lift), 0.0, pop_scale, pop_duration, 0.0, Tween.EASE_OUT, Tween.TRANS_BACK)
 	await _wait(pop_duration)
 
 

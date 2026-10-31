@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://csvxc575byp7d" path="res://Assets/Prefabs/UI/PF_PlayerHand.tscn" id="4_282om"]
 [ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://Assets/Prefabs/UI/PF_BaseCard.tscn" id="5_hpe6p"]
 [ext_resource type="PackedScene" uid="uid://cuo88p0wgcg1g" path="res://Assets/Prefabs/Enemies/PF_TriangleEnemy.tscn" id="8_2posq"]
+[ext_resource type="Script" uid="uid://crrfpbh0tkd3m" path="res://Assets/Scripts/UI/GD_ManaPool.gd" id="9_62ydj"]
 
 [node name="CombatUIState" type="Control" unique_id=711801117 node_paths=PackedStringArray("end_turn_button", "player_hand")]
 layout_mode = 3
@@ -135,10 +136,11 @@ layout_mode = 2
 [node name="RowSlot8" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1671080728 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button", "row_slots") instance=ExtResource("4_282om")]
+[node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button", "mana_pool", "row_slots") instance=ExtResource("4_282om")]
 layout_mode = 1
 card_scene = ExtResource("5_hpe6p")
 draw_button = NodePath("../DrawButton")
+mana_pool = NodePath("../ManaPool")
 row_slots = [NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot2"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot3"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot4"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot5"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot6"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot7"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot8")]
 
 [node name="DrawButton" type="Button" parent="." unique_id=575670881]
@@ -184,5 +186,14 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="ManaPool" type="TextureProgressBar" parent="." unique_id=1346021]
+layout_mode = 1
+offset_left = 38.0
+offset_top = 41.0
+offset_right = 78.0
+offset_bottom = 81.0
+script = ExtResource("9_62ydj")
+max_mana = 100
 
 [connection signal="pressed" from="EndTurnButton" to="." method="_on_end_turn_button_pressed"]

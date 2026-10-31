@@ -32,6 +32,7 @@ var is_slotted := false
 var is_flying := false
 var _tween: Tween
 var _hovered := false
+var attached_sigils: Array[BaseCard] = []
 
 
 static func set_interaction_locked(locked: bool) -> void:
@@ -129,6 +130,14 @@ func dispose() -> void:
 	if dragging_card == self:
 		dragging_card = null
 	queue_free()
+
+
+func get_sigil_resources() -> Array[SpellSigilResource]:
+	var out: Array[SpellSigilResource] = []
+	for sigil in attached_sigils:
+		if is_instance_valid(sigil):
+			out.append(sigil.card_resource as SpellSigilResource)
+	return out
 
 
 func _kill_tween() -> void:

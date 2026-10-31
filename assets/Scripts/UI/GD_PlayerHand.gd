@@ -3,10 +3,13 @@ extends Control
 
 signal card_played(card: BaseCard, global_pos: Vector2) # hook for future mechanics
 
+signal placement_rejected(card: BaseCard, reason: String)
+
 @export var max_hand_size := 8
 @export var draw_amount := 5
 @export var card_scene: PackedScene
 @export var draw_button: Button
+@export var mana_pool: ManaPool
 
 @export_group("Fan")
 ##Radius of the arc
@@ -25,6 +28,11 @@ signal card_played(card: BaseCard, global_pos: Vector2) # hook for future mechan
 
 @export_group("RowSlots")
 @export var row_slots: Array[RowSlot] = []
+
+@export_group("Sigils")
+## Where the first attached spell sigil sits relative to its spell circle. Tune to your card size.
+@export var sigil_start_offset := Vector2(200, 0)
+@export var sigil_step := Vector2(0, 60)
 
 var _drag_origin_slot: RowSlot = null
 var _hand_cards: Array[BaseCard] = []
@@ -134,44 +142,160 @@ func _layout(new_cards: Array[BaseCard] = []) -> void:
 		else:
 			card.go_home(relayout_duration)
 
-# Replace _on_card_drag_released with everything below
-
 
 func _on_card_drag_started(card: BaseCard) -> void:
 	_drag_origin_slot = _slot_holding(card)
 	_drag_origin_index = _hand_cards.find(card)
 	card.is_slotted = false
+
 	if _drag_origin_slot:
 		_drag_origin_slot.clear()
+		_return_sigils_to_hand(card) # pulling a spell circle out sends its spell sigils back
+	else:
+		var owner_card := _circle_owning(card)
+		if owner_card:
+			owner_card.attached_sigils.erase(card)
+			_layout_sigils(owner_card)
 
-	# The card leaves the hand now, so the fan closes the gap immediately.
 	_hand_cards.erase(card)
+	_refresh_mana()
 	_layout()
 
 
-## Runs after the drag ends. Decides where the card goes based on the mouse position.
 func _on_card_drag_released(card: BaseCard, global_pos: Vector2) -> void:
 	card_played.emit(card, global_pos)
 
-	var returned := false
+	var placed := false
 	var slot := _slot_at(global_pos)
 	if slot:
-		var occupant := slot.card
-		if occupant and occupant != card:
-			if _drag_origin_slot:
-				_put_in_slot(occupant, _drag_origin_slot)
-			else:
-				_return_to_hand(occupant)
-		_put_in_slot(card, slot)
-	else:
+		if card.card_resource is SpellSigilResource:
+			placed = _try_attach_sigil(card, slot)
+		elif card.card_resource is SpellCircleResource:
+			placed = _try_place_circle(card, slot)
+
+	if not placed:
 		_return_to_hand(card, _drag_origin_index)
-		returned = true
 
 	_drag_origin_slot = null
 	_drag_origin_index = -1
+	_refresh_mana()
 	_layout()
-	if returned:
-		card.fly_home(relayout_duration) # home values were just set by _layout
+	if not placed:
+		card.fly_home(relayout_duration)
+
+
+func _try_place_circle(card: BaseCard, slot: RowSlot) -> bool:
+	var circle := card.card_resource as SpellCircleResource
+	var occupant := slot.card
+	var total := _committed_mana() - _slot_cost(slot) + circle.get_mana_cost()
+	if not _can_afford(total):
+		return _reject(card, "Not enough mana")
+
+	if occupant and occupant != card:
+		# Replaced spell circle (and its spell sigils) go back to the hand.
+		slot.clear()
+		_return_sigils_to_hand(occupant)
+		_return_to_hand(occupant)
+	_put_in_slot(card, slot)
+	return true
+
+
+func _try_attach_sigil(card: BaseCard, slot: RowSlot) -> bool:
+	var circle_card := slot.card
+	if circle_card == null:
+		return _reject(card, "Spell sigils need a spell circle")
+	var circle := circle_card.card_resource as SpellCircleResource
+	if circle_card.attached_sigils.size() >= circle.max_sigils:
+		return _reject(card, "No free spell sigil slot")
+
+	var sigils := circle_card.get_sigil_resources()
+	sigils.append(card.card_resource as SpellSigilResource)
+	var delta := circle.get_mana_cost(sigils) - _slot_cost(slot)
+	if not _can_afford(_committed_mana() + delta):
+		return _reject(card, "Not enough mana")
+
+	circle_card.attached_sigils.append(card)
+	card.is_slotted = true
+	_layout_sigils(circle_card)
+	return true
+
+
+func _reject(card: BaseCard, reason: String) -> bool:
+	placement_rejected.emit(card, reason)
+	return false
+
+# --- Mana helpers ---
+
+
+func _slot_cost(slot: RowSlot) -> int:
+	if slot.card == null:
+		return 0
+	var circle := slot.card.card_resource as SpellCircleResource
+	return circle.get_mana_cost(slot.card.get_sigil_resources()) if circle else 0
+
+
+func _committed_mana() -> int:
+	var total := 0
+	for slot in row_slots:
+		total += _slot_cost(slot)
+	return total
+
+
+func _can_afford(total: int) -> bool:
+	return mana_pool == null or total <= mana_pool.max_mana
+
+
+func _refresh_mana() -> void:
+	if mana_pool:
+		mana_pool.set_committed(_committed_mana())
+
+# --- Sigil helpers ---
+
+
+func _circle_owning(sigil: BaseCard) -> BaseCard:
+	for slot in row_slots:
+		if slot.card and sigil in slot.card.attached_sigils:
+			return slot.card
+	return null
+
+
+func _return_sigils_to_hand(circle_card: BaseCard) -> void:
+	for sigil in circle_card.attached_sigils:
+		_return_to_hand(sigil)
+	circle_card.attached_sigils.clear()
+
+
+func _layout_sigils(circle_card: BaseCard) -> void:
+	for i in circle_card.attached_sigils.size():
+		var sigil := circle_card.attached_sigils[i]
+		sigil.home_position = circle_card.home_position + sigil_start_offset + sigil_step * i
+		sigil.home_rotation = 0.0
+		sigil.home_z = BaseCard.SLOT_Z + 1 + i
+		sigil.go_home(relayout_duration)
+
+
+func _fade_and_dispose(card: BaseCard, duration: float) -> void:
+	var t := card.create_tween()
+	t.tween_property(card, "modulate:a", 0.0, duration)
+	t.finished.connect(card.dispose)
+
+
+func discard_row_cards(fade_duration := 0.25) -> void:
+	var any := false
+	for slot in row_slots:
+		var card := slot.card
+		if card == null:
+			continue
+		any = true
+		slot.clear()
+		_hand_cards.erase(card)
+		for sigil in card.attached_sigils:
+			_fade_and_dispose(sigil, fade_duration)
+		card.attached_sigils.clear()
+		_fade_and_dispose(card, fade_duration)
+	_refresh_mana()
+	if any and fade_duration > 0.0:
+		await get_tree().create_timer(fade_duration).timeout
 
 
 func _slot_at(global_pos: Vector2) -> RowSlot:
@@ -214,20 +338,3 @@ func _slot_home_position(slot: RowSlot, card: BaseCard) -> Vector2:
 	var center := slot.get_global_rect().get_center()
 	var local := get_global_transform().affine_inverse() * center
 	return local - card.size * 0.5
-
-
-## Fades out and disposes every card in the row slots, then empties the slots.
-func discard_row_cards(fade_duration := 0.25) -> void:
-	var any := false
-	for slot in row_slots:
-		var card := slot.card
-		if card == null:
-			continue
-		any = true
-		slot.clear()
-		_hand_cards.erase(card)
-		var t := card.create_tween()
-		t.tween_property(card, "modulate:a", 0.0, fade_duration)
-		t.finished.connect(card.dispose)
-	if any and fade_duration > 0.0:
-		await get_tree().create_timer(fade_duration).timeout
