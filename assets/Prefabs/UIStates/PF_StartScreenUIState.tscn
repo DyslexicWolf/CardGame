@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hcegjf3hjkni"]
 
-[ext_resource type="Script" uid="uid://iuwcobs78edu" path="res://assets/Scripts/StateMachine/GD_StartScreenUIState.gd" id="1_thdab"]
+[ext_resource type="Script" uid="uid://iuwcobs78edu" path="res://Assets/Scripts/StateMachine/GD_StartScreenUIState.gd" id="1_thdab"]
 
 [node name="StartScreenUIState" type="Control" unique_id=654954145]
 layout_mode = 3

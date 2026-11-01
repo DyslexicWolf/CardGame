@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://dm1013ql5oixo"]
 
-[ext_resource type="Script" uid="uid://c348p8lkbi177" path="res://assets/Scripts/StateMachine/GD_InventoryUIState.gd" id="1_8wxro"]
-[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://assets/Prefabs/UI/PF_BaseCard.tscn" id="2_qclop"]
-[ext_resource type="PackedScene" uid="uid://dbll7yrhb02fl" path="res://assets/Prefabs/UI/PF_InventoryDeckView.tscn" id="2_qmrvt"]
-[ext_resource type="PackedScene" uid="uid://cpqlqd8iprr3k" path="res://assets/Prefabs/UI/PF_InventoryBox.tscn" id="2_ydxjn"]
-[ext_resource type="Resource" uid="uid://b7mfw844gi5yb" path="res://assets/Resources/StartingLoadouts/RES_DefaultStartingLoadout.tres" id="3_gyahp"]
+[ext_resource type="Script" uid="uid://c348p8lkbi177" path="res://Assets/Scripts/StateMachine/GD_InventoryUIState.gd" id="1_8wxro"]
+[ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://Assets/Prefabs/UI/PF_BaseCard.tscn" id="2_qclop"]
+[ext_resource type="PackedScene" uid="uid://dbll7yrhb02fl" path="res://Assets/Prefabs/UI/PF_InventoryDeckView.tscn" id="2_qmrvt"]
+[ext_resource type="PackedScene" uid="uid://cpqlqd8iprr3k" path="res://Assets/Prefabs/UI/PF_InventoryBox.tscn" id="2_ydxjn"]
+[ext_resource type="Resource" uid="uid://b7mfw844gi5yb" path="res://Assets/Resources/StartingLoadouts/RES_DefaultStartingLoadout.tres" id="3_gyahp"]
 
 [node name="InventoryUIState" type="Control" unique_id=839982300 node_paths=PackedStringArray("deck_view", "inventory_box_container")]
 layout_mode = 3

@@ -1,14 +1,13 @@
 [gd_scene format=3 uid="uid://xkxw2o7hnwgj"]
 
-[ext_resource type="Texture2D" uid="uid://ck1pu3wy4vc50" path="res://assets/Art/UI/T_BaseCardBackground.png" id="1_swlyj"]
-[ext_resource type="Script" uid="uid://blcq4bje1l7qe" path="res://assets/Scripts/UI/GD_BaseCard.gd" id="2_plsjp"]
-[ext_resource type="Texture2D" uid="uid://b0in550o5c4i6" path="res://assets/Art/Enemies/T_Triangle.png" id="3_swlyj"]
+[ext_resource type="Texture2D" uid="uid://cpco0gi0cm5wg" path="res://Assets/Art/UI/T_FireCardBackgroundTest.png" id="1_6groa"]
+[ext_resource type="Script" uid="uid://blcq4bje1l7qe" path="res://Assets/Scripts/UI/GD_BaseCard.gd" id="2_plsjp"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ufoov"]
-texture = ExtResource("1_swlyj")
+texture = ExtResource("1_6groa")
 
 [node name="BaseCard" type="PanelContainer" unique_id=2047914077 node_paths=PackedStringArray("art_texture", "effect_icon")]
-custom_minimum_size = Vector2(150, 250)
+custom_minimum_size = Vector2(225, 375)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_ufoov")
 script = ExtResource("2_plsjp")
@@ -26,7 +25,6 @@ mouse_filter = 2
 [node name="ArtTexture" type="TextureRect" parent="MarginContainer/VBoxContainer" unique_id=492567260]
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("3_swlyj")
 stretch_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1928535438]
