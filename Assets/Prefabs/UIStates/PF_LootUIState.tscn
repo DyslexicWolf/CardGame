@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dj86kwldl0ter"]
 
-[ext_resource type="Script" uid="uid://bs5ussnvyokyn" path="res://assets/Scripts/StateMachine/GD_LootUIState.gd" id="1_26vj1"]
+[ext_resource type="Script" uid="uid://bs5ussnvyokyn" path="res://Assets/Scripts/StateMachine/GD_LootUIState.gd" id="1_26vj1"]
 
 [node name="LootUIState" type="Control" unique_id=1606567484]
 layout_mode = 3

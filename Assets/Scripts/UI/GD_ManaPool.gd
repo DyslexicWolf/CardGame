@@ -31,4 +31,4 @@ func get_available() -> int:
 func _refresh_bar() -> void:
 	min_value = 0
 	max_value = max_mana
-	value = clampi(committed, 0, max_mana)
+	value = clampi(get_available(), 0, max_mana)

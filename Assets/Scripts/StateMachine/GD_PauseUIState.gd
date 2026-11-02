@@ -15,7 +15,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("CloseUI") or event.is_action_pressed("Pause"):
 		get_viewport().set_input_as_handled()
-		transitioned.emit(self, "HUDState")
+		_resume()
 
 
 func _enter() -> void:
@@ -26,7 +26,7 @@ func _enter() -> void:
 
 
 func _exit() -> void:
-	set_process_unhandled_input(true)
+	set_process_unhandled_input(false)
 	can_change_state = false
 	pause_ui_state.hide()
 
@@ -36,7 +36,13 @@ func _state_physics_process(_delta: float) -> void:
 
 
 func _on_resume_button_pressed() -> void:
-	transitioned.emit(self, "HUDState")
+	_resume()
+
+
+## Goes back to whatever state opened the pause menu (e.g. combat), not always the HUD.
+func _resume() -> void:
+	var target: State = PlayerUI.previous_state
+	transitioned.emit(self, String(target.name) if target else "HUDState")
 
 
 func _on_quit_button_pressed() -> void:

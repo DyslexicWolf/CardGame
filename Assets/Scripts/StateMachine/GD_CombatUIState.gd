@@ -24,16 +24,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _enter() -> void:
-	PlayerUI.entered_combat.emit()
 	set_process_unhandled_input(true)
 	get_tree().paused = false
 	combat_ui_state.show()
 	call_deferred("input_delay")
+	if _is_pause(PlayerUI.previous_state):
+		return # resuming: keep the current hand and deck
+	PlayerUI.entered_combat.emit()
 	player_hand.rebuild_deck()
 
 
 func _exit() -> void:
-	PlayerUI.exited_combat.emit()
+	if not _is_pause(PlayerUI.next_state):
+		PlayerUI.exited_combat.emit()
 	set_process_unhandled_input(false)
 	can_change_state = false
 	combat_ui_state.hide()
@@ -45,3 +48,7 @@ func _on_end_turn_button_pressed() -> void:
 
 func set_end_turn_enabled(enabled: bool) -> void:
 	end_turn_button.disabled = not enabled
+
+
+func _is_pause(state: State) -> bool:
+	return state is PauseUIState

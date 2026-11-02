@@ -13,10 +13,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not can_change_state:
 		return
 
-	get_viewport().set_input_as_handled()
 	if event.is_action_pressed("Inventory"):
+		get_viewport().set_input_as_handled()
 		transitioned.emit(self, "InventoryUIState")
 	elif event.is_action_pressed("Pause"):
+		get_viewport().set_input_as_handled()
 		transitioned.emit(self, "PauseUIState")
 
 

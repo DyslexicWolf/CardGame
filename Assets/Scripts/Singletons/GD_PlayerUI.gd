@@ -9,6 +9,9 @@ signal exited_combat()
 @export var initial_state: State
 
 var current_state: State
+var previous_state: State
+## The state being entered; valid while the old state's _exit() runs.
+var next_state: State
 var states: Dictionary = { }
 
 
@@ -46,9 +49,11 @@ func change_state(new_state_name: String) -> void:
 	if new_state == null or new_state == current_state:
 		return
 
+	next_state = new_state
 	if current_state:
 		current_state._exit()
 
+	previous_state = current_state
 	current_state = new_state
 	current_state._enter()
 	ui_changed.emit(current_state)

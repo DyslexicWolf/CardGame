@@ -37,6 +37,7 @@ signal placement_rejected(card: BaseCard, reason: String)
 var _drag_origin_slot: RowSlot = null
 var _hand_cards: Array[BaseCard] = []
 var _deck: Array[CardResource] = []
+var _discard: Array[CardResource] = []
 var _player_hand: Control
 var _drag_origin_index := -1
 
@@ -49,17 +50,18 @@ func _ready() -> void:
 
 
 func draw_cards(count: int) -> void:
-	var amount := mini(count, mini(max_hand_size - _hand_cards.size(), _deck.size()))
-	if amount <= 0:
-		return
-
 	var new_cards: Array[BaseCard] = []
-	for i in amount:
+	for i in mini(count, max_hand_size - _hand_cards.size()):
+		if _deck.is_empty():
+			_reshuffle_discard_into_deck()
+			if _deck.is_empty():
+				break # every card is already in hand or in the row
 		var card := _spawn_card(_deck.pop_back())
 		_hand_cards.append(card)
 		new_cards.append(card)
 
-	_layout(new_cards)
+	if not new_cards.is_empty():
+		_layout(new_cards)
 
 
 func remove_card(card: BaseCard) -> void:
@@ -76,9 +78,16 @@ func clear_hand() -> void:
 
 func rebuild_deck() -> void:
 	_deck.clear()
+	_discard.clear()
 	for c in Inventory.deck_cards:
 		if c != null:
 			_deck.append(c)
+	_deck.shuffle()
+
+
+func _reshuffle_discard_into_deck() -> void:
+	_deck.append_array(_discard)
+	_discard.clear()
 	_deck.shuffle()
 
 
@@ -289,7 +298,9 @@ func discard_row_cards(fade_duration := 0.25) -> void:
 		any = true
 		slot.clear()
 		_hand_cards.erase(card)
+		_discard.append(card.card_resource)
 		for sigil in card.attached_sigils:
+			_discard.append(sigil.card_resource)
 			_fade_and_dispose(sigil, fade_duration)
 		card.attached_sigils.clear()
 		_fade_and_dispose(card, fade_duration)
