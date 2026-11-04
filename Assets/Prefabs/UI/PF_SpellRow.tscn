@@ -1,0 +1,47 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Assets/Scripts/UI/GD_SpellRow.gd" id="1_srow"]
+[ext_resource type="PackedScene" uid="uid://bx06j6jxl5jrk" path="res://Assets/Prefabs/UI/PF_RowSlot.tscn" id="2_slot"]
+
+[node name="SpellRow" type="HBoxContainer" unique_id=1203948571 node_paths=PackedStringArray("circle_slot", "rune_slots")]
+theme_override_constants/separation = 8
+script = ExtResource("1_srow")
+circle_slot = NodePath("CircleSlot")
+rune_slots = [NodePath("RuneSlot1"), NodePath("RuneSlot2"), NodePath("RuneSlot3"), NodePath("RuneSlot4"), NodePath("RuneSlot5")]
+
+[node name="CircleSlot" parent="." unique_id=1739204856 instance=ExtResource("2_slot")]
+self_modulate = Color(1, 0.8, 0.45, 1)
+custom_minimum_size = Vector2(113, 188)
+custom_maximum_size = Vector2(113, 188)
+layout_mode = 2
+accepted_type = 0
+
+[node name="Spacer" type="Control" parent="." unique_id=902384756]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RuneSlot1" parent="." unique_id=1650293847 instance=ExtResource("2_slot")]
+custom_minimum_size = Vector2(113, 188)
+custom_maximum_size = Vector2(113, 188)
+layout_mode = 2
+
+[node name="RuneSlot2" parent="." unique_id=1650293848 instance=ExtResource("2_slot")]
+custom_minimum_size = Vector2(113, 188)
+custom_maximum_size = Vector2(113, 188)
+layout_mode = 2
+
+[node name="RuneSlot3" parent="." unique_id=1650293849 instance=ExtResource("2_slot")]
+custom_minimum_size = Vector2(113, 188)
+custom_maximum_size = Vector2(113, 188)
+layout_mode = 2
+
+[node name="RuneSlot4" parent="." unique_id=1650293850 instance=ExtResource("2_slot")]
+custom_minimum_size = Vector2(113, 188)
+custom_maximum_size = Vector2(113, 188)
+layout_mode = 2
+
+[node name="RuneSlot5" parent="." unique_id=1650293851 instance=ExtResource("2_slot")]
+custom_minimum_size = Vector2(113, 188)
+custom_maximum_size = Vector2(113, 188)
+layout_mode = 2

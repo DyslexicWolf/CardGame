@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RuneResource" format=3]
+
+[ext_resource type="Script" uid="uid://ccp2nkxonokue" path="res://Assets/Scripts/BaseResources/GD_RuneResource.gd" id="1_rune"]
+[ext_resource type="Script" uid="uid://ckjiujpatppku" path="res://Assets/Scripts/BaseResources/GD_RuneModifier.gd" id="2_runemod"]
+[ext_resource type="Texture2D" uid="uid://cmp74bcudaedu" path="res://Assets/Art/Enemies/T_Pentagon.png" id="3_art"]
+[ext_resource type="Script" path="res://Assets/Scripts/BaseResources/RuneModifiers/GD_AmplifyModifier.gd" id="mod_Amplify"]
+
+[sub_resource type="Resource" id="Resource_Amplify_0"]
+script = ExtResource("mod_Amplify")
+multiplier = 1.5
+
+[resource]
+script = ExtResource("1_rune")
+card_name = "Amplify"
+card_art_texture = ExtResource("3_art")
+description = "x1.5 spell damage."
+mana_cost_multiplier = 2.0
+modifiers = Array[ExtResource("2_runemod")]([SubResource("Resource_Amplify_0")])

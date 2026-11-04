@@ -7,5 +7,10 @@
 script = ExtResource("1_mrsnd")
 card_name = "Fire Ball"
 card_art_texture = ExtResource("1_wkgxg")
-description = "DIJEWODJOJD"
+description = "A single heavy fire bolt. Holds 3 runes."
+damage = 2
+damage_type = 0
+projectiles = 1
+base_mana_cost = 2
+max_runes = 3
 metadata/_custom_type_script = "uid://diqes8i5jdy0k"

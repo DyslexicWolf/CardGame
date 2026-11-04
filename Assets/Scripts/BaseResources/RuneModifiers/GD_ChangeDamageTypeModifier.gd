@@ -1,6 +1,6 @@
 @tool
 class_name ChangeDamageTypeModifier
-extends SigilModifier
+extends RuneModifier
 @export var new_type: CardResource.DamageType
 
 

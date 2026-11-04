@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RuneResource" format=3]
+
+[ext_resource type="Script" uid="uid://ccp2nkxonokue" path="res://Assets/Scripts/BaseResources/GD_RuneResource.gd" id="1_rune"]
+[ext_resource type="Script" uid="uid://ckjiujpatppku" path="res://Assets/Scripts/BaseResources/GD_RuneModifier.gd" id="2_runemod"]
+[ext_resource type="Texture2D" uid="uid://d2brai8o5kfkt" path="res://Assets/Art/Enemies/T_Square.png" id="3_art"]
+[ext_resource type="Script" path="res://Assets/Scripts/BaseResources/RuneModifiers/GD_PerRuneDamageModifier.gd" id="mod_PerRuneDamage"]
+
+[sub_resource type="Resource" id="Resource_PerRuneDamage_0"]
+script = ExtResource("mod_PerRuneDamage")
+damage_per_rune = 1
+
+[resource]
+script = ExtResource("1_rune")
+card_name = "Resonance"
+card_art_texture = ExtResource("3_art")
+description = "+1 damage per rune in this row."
+mana_cost_multiplier = 1.5
+modifiers = Array[ExtResource("2_runemod")]([SubResource("Resource_PerRuneDamage_0")])

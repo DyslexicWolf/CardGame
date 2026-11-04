@@ -1,7 +1,7 @@
 class_name ReactivateEffect
 extends CardEffect
 
-## 1-based slot to reactivate. If relative, it's an offset from the current slot (-1 = the slot above).
+## 1-based spell row to re-cast. If relative, it's an offset from the current row (-1 = the row above).
 @export var target_slot := 1
 @export var relative := false
 

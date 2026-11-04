@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://1f1aqy2nytxw" path="res://Assets/Scripts/StateMachine/GD_CombatUIState.gd" id="1_f63og"]
 [ext_resource type="Script" uid="uid://b5ud8v2hu1s5c" path="res://Assets/Scripts/Combat/GD_CombatManager.gd" id="2_4tnxl"]
 [ext_resource type="Texture2D" uid="uid://xrajguiix2qs" path="res://Assets/Art/UI/T_DamageBox.png" id="2_xqn58"]
-[ext_resource type="PackedScene" uid="uid://bx06j6jxl5jrk" path="res://Assets/Prefabs/UI/PF_RowSlot.tscn" id="3_8gw0f"]
+[ext_resource type="PackedScene" path="res://Assets/Prefabs/UI/PF_SpellRow.tscn" id="3_8gw0f"]
 [ext_resource type="Texture2D" uid="uid://bh82ja3nn5feb" path="res://Assets/Art/UI/T_ActivationsBox.png" id="3_lag2g"]
 [ext_resource type="PackedScene" uid="uid://csvxc575byp7d" path="res://Assets/Prefabs/UI/PF_PlayerHand.tscn" id="4_282om"]
 [ext_resource type="PackedScene" uid="uid://xkxw2o7hnwgj" path="res://Assets/Prefabs/UI/PF_BaseCard.tscn" id="5_hpe6p"]
@@ -114,52 +114,30 @@ autowrap_mode = 0
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ColumnsHBoxContainer" type="HBoxContainer" parent="." unique_id=1788374625]
+[node name="SpellRowsVBox" type="VBoxContainer" parent="." unique_id=1788374625]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -628.0
-offset_top = 32.0
-offset_right = 628.0
-offset_bottom = 282.0
-grow_horizontal = 2
-theme_override_constants/separation = 15
+offset_left = 120.0
+offset_top = 40.0
+offset_right = 860.0
+offset_bottom = 624.0
+mouse_filter = 2
+theme_override_constants/separation = 10
 
-[node name="VBoxContainer" type="HBoxContainer" parent="ColumnsHBoxContainer" unique_id=1523919834]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="RowSlot" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1441602114 instance=ExtResource("3_8gw0f")]
+[node name="SpellRow1" parent="SpellRowsVBox" unique_id=1523919834 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="RowSlot2" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1278723011 instance=ExtResource("3_8gw0f")]
+[node name="SpellRow2" parent="SpellRowsVBox" unique_id=1441602114 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="RowSlot3" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1360195745 instance=ExtResource("3_8gw0f")]
+[node name="SpellRow3" parent="SpellRowsVBox" unique_id=1278723011 instance=ExtResource("3_8gw0f")]
 layout_mode = 2
 
-[node name="RowSlot4" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1961417255 instance=ExtResource("3_8gw0f")]
-layout_mode = 2
-
-[node name="RowSlot5" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=314617773 instance=ExtResource("3_8gw0f")]
-layout_mode = 2
-
-[node name="RowSlot6" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1367448499 instance=ExtResource("3_8gw0f")]
-layout_mode = 2
-
-[node name="RowSlot7" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1993231267 instance=ExtResource("3_8gw0f")]
-layout_mode = 2
-
-[node name="RowSlot8" parent="ColumnsHBoxContainer/VBoxContainer" unique_id=1671080728 instance=ExtResource("3_8gw0f")]
-layout_mode = 2
-
-[node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button", "mana_pool", "row_slots") instance=ExtResource("4_282om")]
+[node name="PlayerHand" parent="." unique_id=1754510952 node_paths=PackedStringArray("draw_button", "mana_pool", "spell_rows") instance=ExtResource("4_282om")]
 layout_mode = 1
 card_scene = ExtResource("5_hpe6p")
 draw_button = NodePath("../DrawButton")
 mana_pool = NodePath("../ManaPool")
-row_slots = [NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot2"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot3"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot4"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot5"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot6"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot7"), NodePath("../ColumnsHBoxContainer/VBoxContainer/RowSlot8")]
+spell_rows = [NodePath("../SpellRowsVBox/SpellRow1"), NodePath("../SpellRowsVBox/SpellRow2"), NodePath("../SpellRowsVBox/SpellRow3")]
 
 [node name="DrawButton" type="Button" parent="." unique_id=575670881]
 layout_mode = 1

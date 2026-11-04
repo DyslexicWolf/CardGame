@@ -1,6 +1,6 @@
 @tool
-class_name MultipleProjectileModifier
-extends SigilModifier
+class_name AddProjectilesModifier
+extends RuneModifier
 @export var extra_projectiles := 1
 
 

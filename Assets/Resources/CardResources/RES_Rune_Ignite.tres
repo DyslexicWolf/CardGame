@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RuneResource" format=3]
+
+[ext_resource type="Script" uid="uid://ccp2nkxonokue" path="res://Assets/Scripts/BaseResources/GD_RuneResource.gd" id="1_rune"]
+[ext_resource type="Script" uid="uid://ckjiujpatppku" path="res://Assets/Scripts/BaseResources/GD_RuneModifier.gd" id="2_runemod"]
+[ext_resource type="Texture2D" uid="uid://d2brai8o5kfkt" path="res://Assets/Art/Enemies/T_Square.png" id="3_art"]
+[ext_resource type="Script" uid="uid://bibauufr6h4ce" path="res://Assets/Scripts/BaseResources/RuneModifiers/GD_ChangeDamageTypeModifier.gd" id="mod_ChangeDamageType"]
+
+[sub_resource type="Resource" id="Resource_ChangeDamageType_0"]
+script = ExtResource("mod_ChangeDamageType")
+new_type = 0
+
+[resource]
+script = ExtResource("1_rune")
+card_name = "Ignite"
+card_art_texture = ExtResource("3_art")
+description = "The spell becomes Fire."
+mana_cost_multiplier = 1.5
+modifiers = Array[ExtResource("2_runemod")]([SubResource("Resource_ChangeDamageType_0")])

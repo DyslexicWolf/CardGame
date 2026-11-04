@@ -10,7 +10,7 @@ enum DamageType {
 }
 enum CardType {
 	SPELL_CIRCLE,
-	SPELL_SIGIL,
+	RUNE,
 }
 
 @export var card_name := ""

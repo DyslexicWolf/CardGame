@@ -26,13 +26,11 @@ signal placement_rejected(card: BaseCard, reason: String)
 @export var draw_stagger := 0.08
 @export var relayout_duration := 0.2
 
-@export_group("RowSlots")
-@export var row_slots: Array[RowSlot] = []
-
-@export_group("Sigils")
-## Where the first attached spell sigil sits relative to its spell circle. Tune to your card size.
-@export var sigil_start_offset := Vector2(200, 0)
-@export var sigil_step := Vector2(0, 60)
+@export_group("SpellRows")
+## Top to bottom. This is also the order the spells are cast in.
+@export var spell_rows: Array[SpellRow] = []
+## Scale of a card sitting in a spell row slot.
+@export var slotted_scale := 0.5
 
 var _drag_origin_slot: RowSlot = null
 var _hand_cards: Array[BaseCard] = []
@@ -51,12 +49,8 @@ func _ready() -> void:
 
 func draw_cards(count: int) -> void:
 	var new_cards: Array[BaseCard] = []
-	for i in mini(count, max_hand_size - _hand_cards.size()):
-		if _deck.is_empty():
-			_reshuffle_discard_into_deck()
-			if _deck.is_empty():
-				break # every card is already in hand or in the row
-		var card := _spawn_card(_deck.pop_back())
+	for resource in _draw_resources(mini(count, max_hand_size - _hand_cards.size())):
+		var card := _spawn_card(resource)
 		_hand_cards.append(card)
 		new_cards.append(card)
 
@@ -91,17 +85,46 @@ func _reshuffle_discard_into_deck() -> void:
 	_deck.shuffle()
 
 
-## Cards in slot order (top to bottom). Empty slots are null so indices stay meaningful.
-func get_row_cards() -> Array[BaseCard]:
-	var slots := row_slots.duplicate()
-	slots.sort_custom(
-		func(a: RowSlot, b: RowSlot) -> bool:
-			return a.global_position.y < b.global_position.y,
-	)
-	var cards: Array[BaseCard] = []
-	for slot: RowSlot in slots:
-		cards.append((slot as RowSlot).card)
-	return cards
+func _draw_resources(amount: int) -> Array[CardResource]:
+	var drawn: Array[CardResource] = []
+	for i in amount:
+		if _deck.is_empty():
+			_reshuffle_discard_into_deck()
+			if _deck.is_empty():
+				break # every card is already in hand or in a spell row
+		drawn.append(_deck.pop_back())
+	_ensure_spell_circle(drawn, amount)
+	return drawn
+
+
+## The hand always holds a spell circle after drawing, as long as one is left in the deck or discard pile.
+## It takes the place of the last drawn card, which goes back on top of the deck.
+func _ensure_spell_circle(drawn: Array[CardResource], room: int) -> void:
+	if room <= 0 or drawn.any(_is_spell_circle) or _hand_cards.any(
+		func(c: BaseCard) -> bool:
+			return _is_spell_circle(c.card_resource),
+	):
+		return
+
+	var index := _deck.find_custom(_is_spell_circle)
+	if index == -1:
+		_reshuffle_discard_into_deck()
+		index = _deck.find_custom(_is_spell_circle)
+		if index == -1:
+			return # every spell circle is already in a spell row
+	var circle: CardResource = _deck.pop_at(index)
+	if drawn.size() >= room:
+		_deck.append(drawn.pop_back())
+	drawn.append(circle)
+
+
+func _is_spell_circle(resource: CardResource) -> bool:
+	return resource is SpellCircleResource
+
+
+## Spell rows in cast order (top to bottom).
+func get_spell_rows() -> Array[SpellRow]:
+	return spell_rows
 
 
 func _on_draw_pressed() -> void:
@@ -156,15 +179,14 @@ func _on_card_drag_started(card: BaseCard) -> void:
 	_drag_origin_slot = _slot_holding(card)
 	_drag_origin_index = _hand_cards.find(card)
 	card.is_slotted = false
+	card.home_scale = 1.0
 
 	if _drag_origin_slot:
 		_drag_origin_slot.clear()
-		_return_sigils_to_hand(card) # pulling a spell circle out sends its spell sigils back
-	else:
-		var owner_card := _circle_owning(card)
-		if owner_card:
-			owner_card.attached_sigils.erase(card)
-			_layout_sigils(owner_card)
+		var row := _row_of(_drag_origin_slot)
+		if card.card_resource is SpellCircleResource:
+			_return_runes_to_hand(row) # pulling a spell circle out sends its runes back
+		row.refresh_locks()
 
 	_hand_cards.erase(card)
 	_refresh_mana()
@@ -177,10 +199,10 @@ func _on_card_drag_released(card: BaseCard, global_pos: Vector2) -> void:
 	var placed := false
 	var slot := _slot_at(global_pos)
 	if slot:
-		if card.card_resource is SpellSigilResource:
-			placed = _try_attach_sigil(card, slot)
-		elif card.card_resource is SpellCircleResource:
+		if card.card_resource is SpellCircleResource:
 			placed = _try_place_circle(card, slot)
+		elif card.card_resource is RuneResource:
+			placed = _try_place_rune(card, slot)
 
 	if not placed:
 		_return_to_hand(card, _drag_origin_index)
@@ -194,38 +216,49 @@ func _on_card_drag_released(card: BaseCard, global_pos: Vector2) -> void:
 
 
 func _try_place_circle(card: BaseCard, slot: RowSlot) -> bool:
+	if not slot.accepts(card.card_resource):
+		return _reject(card, "Spell circles go in the first slot of a row")
+	var row := _row_of(slot)
 	var circle := card.card_resource as SpellCircleResource
+	var kept_slots := mini(circle.max_runes, row.rune_slots.size())
+	var total := _committed_mana() - row.get_mana_cost() + circle.get_mana_cost(_runes_in(row, kept_slots))
+	if not _can_afford(total):
+		return _reject(card, "Not enough mana")
+
 	var occupant := slot.card
-	var total := _committed_mana() - _slot_cost(slot) + circle.get_mana_cost()
+	if occupant and occupant != card:
+		# Replaced spell circle goes back to the hand, its runes stay if the new circle has room.
+		slot.clear()
+		_return_to_hand(occupant)
+	_put_in_slot(card, slot)
+	_return_runes_to_hand(row, kept_slots)
+	row.refresh_locks()
+	return true
+
+
+func _try_place_rune(card: BaseCard, slot: RowSlot) -> bool:
+	if not slot.accepts(card.card_resource):
+		return _reject(card, "Runes go after a spell circle")
+	var row := _row_of(slot)
+	var circle := row.get_circle()
+	if circle == null:
+		return _reject(card, "Runes need a spell circle")
+	if slot.locked:
+		return _reject(card, "This spell circle only holds %d runes" % circle.max_runes)
+
+	var occupant := slot.card
+	var runes := row.get_rune_resources()
+	if occupant:
+		runes.erase(occupant.card_resource)
+	runes.append(card.card_resource as RuneResource)
+	var total := _committed_mana() - row.get_mana_cost() + circle.get_mana_cost(runes)
 	if not _can_afford(total):
 		return _reject(card, "Not enough mana")
 
 	if occupant and occupant != card:
-		# Replaced spell circle (and its spell sigils) go back to the hand.
 		slot.clear()
-		_return_sigils_to_hand(occupant)
 		_return_to_hand(occupant)
 	_put_in_slot(card, slot)
-	return true
-
-
-func _try_attach_sigil(card: BaseCard, slot: RowSlot) -> bool:
-	var circle_card := slot.card
-	if circle_card == null:
-		return _reject(card, "Spell sigils need a spell circle")
-	var circle := circle_card.card_resource as SpellCircleResource
-	if circle_card.attached_sigils.size() >= circle.max_sigils:
-		return _reject(card, "No free spell sigil slot")
-
-	var sigils := circle_card.get_sigil_resources()
-	sigils.append(card.card_resource as SpellSigilResource)
-	var delta := circle.get_mana_cost(sigils) - _slot_cost(slot)
-	if not _can_afford(_committed_mana() + delta):
-		return _reject(card, "Not enough mana")
-
-	circle_card.attached_sigils.append(card)
-	card.is_slotted = true
-	_layout_sigils(circle_card)
 	return true
 
 
@@ -236,17 +269,10 @@ func _reject(card: BaseCard, reason: String) -> bool:
 # --- Mana helpers ---
 
 
-func _slot_cost(slot: RowSlot) -> int:
-	if slot.card == null:
-		return 0
-	var circle := slot.card.card_resource as SpellCircleResource
-	return circle.get_mana_cost(slot.card.get_sigil_resources()) if circle else 0
-
-
 func _committed_mana() -> int:
 	var total := 0
-	for slot in row_slots:
-		total += _slot_cost(slot)
+	for row in spell_rows:
+		total += row.get_mana_cost()
 	return total
 
 
@@ -258,29 +284,33 @@ func _refresh_mana() -> void:
 	if mana_pool:
 		mana_pool.set_committed(_committed_mana())
 
-# --- Sigil helpers ---
+# --- Spell row helpers ---
 
 
-func _circle_owning(sigil: BaseCard) -> BaseCard:
-	for slot in row_slots:
-		if slot.card and sigil in slot.card.attached_sigils:
-			return slot.card
+func _row_of(slot: RowSlot) -> SpellRow:
+	for row in spell_rows:
+		if slot in row.all_slots():
+			return row
 	return null
 
 
-func _return_sigils_to_hand(circle_card: BaseCard) -> void:
-	for sigil in circle_card.attached_sigils:
-		_return_to_hand(sigil)
-	circle_card.attached_sigils.clear()
+## Runes in the first `slot_count` rune slots of a row.
+func _runes_in(row: SpellRow, slot_count: int) -> Array[RuneResource]:
+	var runes: Array[RuneResource] = []
+	for i in mini(slot_count, row.rune_slots.size()):
+		var rune_card := row.rune_slots[i].card
+		if rune_card:
+			runes.append(rune_card.card_resource as RuneResource)
+	return runes
 
 
-func _layout_sigils(circle_card: BaseCard) -> void:
-	for i in circle_card.attached_sigils.size():
-		var sigil := circle_card.attached_sigils[i]
-		sigil.home_position = circle_card.home_position + sigil_start_offset + sigil_step * i
-		sigil.home_rotation = 0.0
-		sigil.home_z = BaseCard.SLOT_Z + 1 + i
-		sigil.go_home(relayout_duration)
+## Sends the runes in rune slots from `from_index` onwards back to the hand.
+func _return_runes_to_hand(row: SpellRow, from_index := 0) -> void:
+	for i in range(from_index, row.rune_slots.size()):
+		var slot := row.rune_slots[i]
+		if slot.card:
+			_return_to_hand(slot.card)
+			slot.clear()
 
 
 func _fade_and_dispose(card: BaseCard, duration: float) -> void:
@@ -291,28 +321,27 @@ func _fade_and_dispose(card: BaseCard, duration: float) -> void:
 
 func discard_row_cards(fade_duration := 0.25) -> void:
 	var any := false
-	for slot in row_slots:
-		var card := slot.card
-		if card == null:
-			continue
-		any = true
-		slot.clear()
-		_hand_cards.erase(card)
-		_discard.append(card.card_resource)
-		for sigil in card.attached_sigils:
-			_discard.append(sigil.card_resource)
-			_fade_and_dispose(sigil, fade_duration)
-		card.attached_sigils.clear()
-		_fade_and_dispose(card, fade_duration)
+	for row in spell_rows:
+		for slot in row.all_slots():
+			var card := slot.card
+			if card == null:
+				continue
+			any = true
+			slot.clear()
+			_hand_cards.erase(card)
+			_discard.append(card.card_resource)
+			_fade_and_dispose(card, fade_duration)
+		row.refresh_locks()
 	_refresh_mana()
 	if any and fade_duration > 0.0:
 		await get_tree().create_timer(fade_duration).timeout
 
 
 func _slot_at(global_pos: Vector2) -> RowSlot:
-	for slot in row_slots:
-		if slot.get_global_rect().has_point(global_pos):
-			return slot
+	for row in spell_rows:
+		for slot in row.all_slots():
+			if slot.get_global_rect().has_point(global_pos):
+				return slot
 	return null
 
 
@@ -320,6 +349,7 @@ func _put_in_slot(card: BaseCard, slot: RowSlot) -> void:
 	_hand_cards.erase(card)
 	slot.assign(card)
 	card.is_slotted = true
+	card.home_scale = slotted_scale
 	card.home_position = _slot_home_position(slot, card)
 	card.home_rotation = 0.0
 	card.home_z = BaseCard.SLOT_Z
@@ -329,6 +359,7 @@ func _put_in_slot(card: BaseCard, slot: RowSlot) -> void:
 ## index = -1 appends. Otherwise the card goes back to where it was in the fan.
 func _return_to_hand(card: BaseCard, index := -1) -> void:
 	card.is_slotted = false
+	card.home_scale = 1.0
 	if card in _hand_cards:
 		return
 	if index >= 0 and index <= _hand_cards.size():
@@ -338,13 +369,15 @@ func _return_to_hand(card: BaseCard, index := -1) -> void:
 
 
 func _slot_holding(card: BaseCard) -> RowSlot:
-	for slot in row_slots:
-		if slot.card == card:
-			return slot
+	for row in spell_rows:
+		for slot in row.all_slots():
+			if slot.card == card:
+				return slot
 	return null
 
 
 ## Slot center in this hand's local space (cards are children of the hand).
+## Cards scale around their center, so this stays centered at any slotted_scale.
 func _slot_home_position(slot: RowSlot, card: BaseCard) -> Vector2:
 	var center := slot.get_global_rect().get_center()
 	var local := get_global_transform().affine_inverse() * center

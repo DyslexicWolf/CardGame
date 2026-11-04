@@ -27,12 +27,12 @@ var card_resource: CardResource
 var home_position := Vector2.ZERO
 var home_rotation := 0.0
 var home_z := 0
+var home_scale := 1.0
 var is_dragging := false
 var is_slotted := false
 var is_flying := false
 var _tween: Tween
 var _hovered := false
-var attached_sigils: Array[BaseCard] = []
 
 
 static func set_interaction_locked(locked: bool) -> void:
@@ -103,7 +103,7 @@ func tween_visual(
 func go_home(duration: float, delay := 0.0) -> Tween:
 	z_index = home_z
 	_release_hover_ownership()
-	return tween_visual(home_position, home_rotation, 1.0, duration, delay)
+	return tween_visual(home_position, home_rotation, home_scale, duration, delay)
 
 
 ## Like go_home, but the card can't be hovered until it arrives.
@@ -121,7 +121,7 @@ func snap_home() -> void:
 	_kill_tween()
 	_release_hover_ownership()
 	z_index = home_z
-	apply_visual(home_position, home_rotation, Vector2.ONE)
+	apply_visual(home_position, home_rotation, Vector2.ONE * home_scale)
 
 
 func dispose() -> void:
@@ -130,14 +130,6 @@ func dispose() -> void:
 	if dragging_card == self:
 		dragging_card = null
 	queue_free()
-
-
-func get_sigil_resources() -> Array[SpellSigilResource]:
-	var out: Array[SpellSigilResource] = []
-	for sigil in attached_sigils:
-		if is_instance_valid(sigil):
-			out.append(sigil.card_resource as SpellSigilResource)
-	return out
 
 
 func _kill_tween() -> void:
