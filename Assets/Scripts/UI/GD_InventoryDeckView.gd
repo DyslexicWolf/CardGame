@@ -3,8 +3,6 @@ extends Control
 
 signal card_drag_released(card: BaseCard, global_pos: Vector2, deck_index: int)
 
-@export var card_scene: PackedScene
-
 @export_group("Layout")
 @export var min_visible_width := 36.0
 @export var layout_duration := 0.2
@@ -27,10 +25,9 @@ func show_cards(slots: Array[CardResource]) -> void:
 		var resource := slots[slot_index]
 		if resource == null:
 			continue
-		var card := card_scene.instantiate() as BaseCard
+		var card := CardFactory.create(resource)
 		add_child(card)
 		card.size = card.get_combined_minimum_size()
-		card.setup(resource)
 
 		card.hover_lift = minf(hover_lift, (card.hover_scale - 1.0) * card.size.y * 0.45)
 		card.hover_started.connect(_on_card_hover_started)
@@ -56,20 +53,26 @@ func _layout(animate: bool) -> void:
 	var count := _cards.size()
 	if count == 0:
 		return
-	var card_size := _cards[0].size
+	# Spell circle and rune cards differ in size: each card is centered in a column of the widest one.
+	var column_width := 0.0
+	for card in _cards:
+		column_width = maxf(column_width, card.size.x)
 
-	var step := card_size.x
+	var step := column_width
 	if count > 1:
-		step = clampf((size.x - card_size.x) / (count - 1), min_visible_width, card_size.x)
+		step = clampf((size.x - column_width) / (count - 1), min_visible_width, column_width)
 
-	var total_width := card_size.x + step * (count - 1)
-	var start := Vector2((size.x - total_width) * 0.5, (size.y - card_size.y) * 0.5)
+	var total_width := column_width + step * (count - 1)
+	var start_x := (size.x - total_width) * 0.5
 
 	for i in count:
 		var card := _cards[i]
 		if card.is_dragging:
 			continue
-		card.home_position = start + Vector2(step * i, 0.0)
+		card.home_position = Vector2(
+			start_x + step * i + (column_width - card.size.x) * 0.5,
+			(size.y - card.size.y) * 0.5,
+		)
 		card.home_rotation = 0.0
 		card.home_z = i
 		if animate:

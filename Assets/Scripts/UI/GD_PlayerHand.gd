@@ -5,21 +5,15 @@ signal card_played(card: BaseCard, global_pos: Vector2) # hook for future mechan
 
 signal placement_rejected(card: BaseCard, reason: String)
 
-@export var max_hand_size := 8
 @export var draw_amount := 5
-@export var card_scene: PackedScene
 @export var draw_button: Button
 @export var mana_pool: ManaPool
 
-@export_group("Fan")
-##Radius of the arc
-@export var fan_radius := 900.0
-##Arc distance between adjacent cards
-@export var card_spacing := 110.0
-##Total spread limit
-@export var max_fan_angle := deg_to_rad(40.0)
-##Pushes the arc origin up/down
-@export var fan_center_offset := 0.0
+@export_group("Hands")
+## Holds the spell circle cards.
+@export var circle_fan: HandFan
+## Holds the rune cards.
+@export var rune_fan: HandFan
 
 @export_group("Draw animation")
 @export var draw_duration := 0.22
@@ -33,15 +27,12 @@ signal placement_rejected(card: BaseCard, reason: String)
 @export var slotted_scale := 0.5
 
 var _drag_origin_slot: RowSlot = null
-var _hand_cards: Array[BaseCard] = []
 var _deck: Array[CardResource] = []
 var _discard: Array[CardResource] = []
-var _player_hand: Control
 var _drag_origin_index := -1
 
 
 func _ready() -> void:
-	_player_hand = self
 	rebuild_deck()
 	if draw_button:
 		draw_button.pressed.connect(_on_draw_pressed)
@@ -49,9 +40,9 @@ func _ready() -> void:
 
 func draw_cards(count: int) -> void:
 	var new_cards: Array[BaseCard] = []
-	for resource in _draw_resources(mini(count, max_hand_size - _hand_cards.size())):
+	for resource in _draw_resources(count):
 		var card := _spawn_card(resource)
-		_hand_cards.append(card)
+		_fan_for(resource).cards.append(card)
 		new_cards.append(card)
 
 	if not new_cards.is_empty():
@@ -59,15 +50,16 @@ func draw_cards(count: int) -> void:
 
 
 func remove_card(card: BaseCard) -> void:
-	_hand_cards.erase(card)
+	_fan_for(card.card_resource).cards.erase(card)
 	card.dispose()
 	_layout()
 
 
 func clear_hand() -> void:
-	for card in _hand_cards:
-		card.dispose()
-	_hand_cards.clear()
+	for fan in _fans():
+		for card in fan.cards:
+			card.dispose()
+		fan.cards.clear()
 
 
 func rebuild_deck() -> void:
@@ -88,22 +80,34 @@ func _reshuffle_discard_into_deck() -> void:
 func _draw_resources(amount: int) -> Array[CardResource]:
 	var drawn: Array[CardResource] = []
 	for i in amount:
-		if _deck.is_empty():
+		var index := _next_drawable_index(drawn)
+		if index == -1:
 			_reshuffle_discard_into_deck()
-			if _deck.is_empty():
-				break # every card is already in hand or in a spell row
-		drawn.append(_deck.pop_back())
+			index = _next_drawable_index(drawn)
+			if index == -1:
+				break # every remaining card's hand is full, or all cards are in hands or spell rows
+		drawn.append(_deck.pop_at(index))
 	_ensure_spell_circle(drawn, amount)
 	return drawn
 
 
-## The hand always holds a spell circle after drawing, as long as one is left in the deck or discard pile.
+## Top-most deck card whose hand still has room, -1 if there is none.
+func _next_drawable_index(drawn: Array[CardResource]) -> int:
+	for i in range(_deck.size() - 1, -1, -1):
+		var fan := _fan_for(_deck[i])
+		var incoming := drawn.filter(
+			func(c: CardResource) -> bool:
+				return _fan_for(c) == fan,
+		).size()
+		if fan.get_room() > incoming:
+			return i
+	return -1
+
+
+## The circle hand always holds a spell circle after drawing, as long as one is left in the deck or discard pile.
 ## It takes the place of the last drawn card, which goes back on top of the deck.
-func _ensure_spell_circle(drawn: Array[CardResource], room: int) -> void:
-	if room <= 0 or drawn.any(_is_spell_circle) or _hand_cards.any(
-		func(c: BaseCard) -> bool:
-			return _is_spell_circle(c.card_resource),
-	):
+func _ensure_spell_circle(drawn: Array[CardResource], amount: int) -> void:
+	if amount <= 0 or drawn.any(_is_spell_circle) or not circle_fan.cards.is_empty():
 		return
 
 	var index := _deck.find_custom(_is_spell_circle)
@@ -113,7 +117,7 @@ func _ensure_spell_circle(drawn: Array[CardResource], room: int) -> void:
 		if index == -1:
 			return # every spell circle is already in a spell row
 	var circle: CardResource = _deck.pop_at(index)
-	if drawn.size() >= room:
+	if drawn.size() >= amount:
 		_deck.append(drawn.pop_back())
 	drawn.append(circle)
 
@@ -131,39 +135,41 @@ func _on_draw_pressed() -> void:
 	draw_cards(draw_amount)
 
 
+func _fans() -> Array[HandFan]:
+	return [circle_fan, rune_fan]
+
+
+func _fan_for(resource: CardResource) -> HandFan:
+	return rune_fan if resource is RuneResource else circle_fan
+
+
 func _spawn_card(resource: CardResource) -> BaseCard:
-	var card: BaseCard = card_scene.instantiate()
-	add_child(card)
-	card.setup(resource)
+	var card := CardFactory.create(resource)
+	var fan := _fan_for(resource)
+	fan.add_child(card)
 	card.drag_started.connect(_on_card_drag_started)
 	card.drag_released.connect(_on_card_drag_released)
-	card.apply_visual(_spawn_position(card), 0.0, Vector2.ONE * 0.5)
+	card.apply_visual(_spawn_position(fan, card), 0.0, Vector2.ONE * 0.5)
 	return card
 
 
-func _spawn_position(card: BaseCard) -> Vector2:
-	return Vector2(size.x * 0.5, -size.y) - card.size * 0.5
-
-
-func _fan_slot(index: int, total: int, card_size: Vector2) -> Array:
-	var step := card_spacing / fan_radius
-	if total > 1:
-		step = minf(step, max_fan_angle / float(total - 1))
-	var angle := (index - (total - 1) * 0.5) * step
-
-	var origin := Vector2(size.x * 0.5, size.y + fan_radius + fan_center_offset)
-	var pos := origin + Vector2(sin(angle), -cos(angle)) * fan_radius
-	return [pos - card_size * 0.5, angle]
+func _spawn_position(fan: HandFan, card: BaseCard) -> Vector2:
+	return Vector2(fan.size.x * 0.5, -fan.size.y) - card.size * 0.5
 
 
 func _layout(new_cards: Array[BaseCard] = []) -> void:
-	var total := _hand_cards.size()
+	for fan in _fans():
+		_layout_fan(fan, new_cards)
+
+
+func _layout_fan(fan: HandFan, new_cards: Array[BaseCard]) -> void:
+	var total := fan.cards.size()
 	var new_index := 0
 	for i in total:
-		var card := _hand_cards[i]
+		var card := fan.cards[i]
 		if card.is_dragging:
 			continue
-		var slot := _fan_slot(i, total, card.size)
+		var slot := fan.get_card_slot(i, total, card.size)
 		card.home_position = slot[0]
 		card.home_rotation = slot[1]
 		card.home_z = i
@@ -177,7 +183,8 @@ func _layout(new_cards: Array[BaseCard] = []) -> void:
 
 func _on_card_drag_started(card: BaseCard) -> void:
 	_drag_origin_slot = _slot_holding(card)
-	_drag_origin_index = _hand_cards.find(card)
+	var fan := _fan_for(card.card_resource)
+	_drag_origin_index = fan.cards.find(card)
 	card.is_slotted = false
 	card.home_scale = 1.0
 
@@ -188,7 +195,7 @@ func _on_card_drag_started(card: BaseCard) -> void:
 			_return_runes_to_hand(row) # pulling a spell circle out sends its runes back
 		row.refresh_locks()
 
-	_hand_cards.erase(card)
+	fan.cards.erase(card)
 	_refresh_mana()
 	_layout()
 
@@ -328,7 +335,6 @@ func discard_row_cards(fade_duration := 0.25) -> void:
 				continue
 			any = true
 			slot.clear()
-			_hand_cards.erase(card)
 			_discard.append(card.card_resource)
 			_fade_and_dispose(card, fade_duration)
 		row.refresh_locks()
@@ -346,7 +352,7 @@ func _slot_at(global_pos: Vector2) -> RowSlot:
 
 
 func _put_in_slot(card: BaseCard, slot: RowSlot) -> void:
-	_hand_cards.erase(card)
+	_fan_for(card.card_resource).cards.erase(card)
 	slot.assign(card)
 	card.is_slotted = true
 	card.home_scale = slotted_scale
@@ -360,12 +366,13 @@ func _put_in_slot(card: BaseCard, slot: RowSlot) -> void:
 func _return_to_hand(card: BaseCard, index := -1) -> void:
 	card.is_slotted = false
 	card.home_scale = 1.0
-	if card in _hand_cards:
+	var cards := _fan_for(card.card_resource).cards
+	if card in cards:
 		return
-	if index >= 0 and index <= _hand_cards.size():
-		_hand_cards.insert(index, card)
+	if index >= 0 and index <= cards.size():
+		cards.insert(index, card)
 	else:
-		_hand_cards.append(card)
+		cards.append(card)
 
 
 func _slot_holding(card: BaseCard) -> RowSlot:
@@ -376,9 +383,9 @@ func _slot_holding(card: BaseCard) -> RowSlot:
 	return null
 
 
-## Slot center in this hand's local space (cards are children of the hand).
+## Slot center in the local space of the card's fan (cards are children of their fan).
 ## Cards scale around their center, so this stays centered at any slotted_scale.
 func _slot_home_position(slot: RowSlot, card: BaseCard) -> Vector2:
 	var center := slot.get_global_rect().get_center()
-	var local := get_global_transform().affine_inverse() * center
+	var local := _fan_for(card.card_resource).get_global_transform().affine_inverse() * center
 	return local - card.size * 0.5

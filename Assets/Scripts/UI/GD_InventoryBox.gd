@@ -3,8 +3,6 @@ extends Control
 
 signal card_drag_released(card: BaseCard, global_pos: Vector2, box: InventoryBox)
 
-@export var card_scene: PackedScene
-
 var box_index := -1
 var _card: BaseCard
 
@@ -21,12 +19,12 @@ func set_card(resource: CardResource) -> void:
 	if resource == null:
 		return
 
-	_card = card_scene.instantiate() as BaseCard
+	_card = CardFactory.create(resource)
 	add_child(_card)
 	_card.size = _card.get_combined_minimum_size()
-	_card.setup(resource)
 	_card.hover_lift = 0.0
-	_card.hover_scale = 1.08
+	if not _card is RuneCard: # rune cards need their full hover scale to stay readable
+		_card.hover_scale = 1.08
 	_card.drag_released.connect(_on_card_drag_released)
 	_center_card()
 

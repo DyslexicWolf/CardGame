@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="SpellCircleResource" format=3]
 
 [ext_resource type="Script" uid="uid://diqes8i5jdy0k" path="res://Assets/Scripts/BaseResources/GD_SpellCircleResource.gd" id="1_mrsnd"]
-[ext_resource type="Texture2D" uid="uid://b0in550o5c4i6" path="res://Assets/Art/Enemies/T_Triangle.png" id="1_wkgxg"]
+[ext_resource type="Texture2D" uid="uid://bkhteqfnv7kjv" path="res://Assets/Art/CircleSpells/T_FireArrow.png" id="1_wkgxg"]
 
 [resource]
 script = ExtResource("1_mrsnd")

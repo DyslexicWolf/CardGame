@@ -1,7 +1,6 @@
 class_name InventoryUIState
 extends State
 
-@export var card_scene: PackedScene
 @export var deck_view: InventoryDeckView
 @export var inventory_box_container: HBoxContainer
 @export var starting_loadout: StartingLoadout
@@ -13,14 +12,12 @@ var _boxes: Array[InventoryBox] = []
 func _ready() -> void:
 	set_process_unhandled_input(false)
 	inventory_ui_state = self
-	deck_view.card_scene = card_scene
 	deck_view.card_drag_released.connect(_on_deck_card_released)
 
 	for child in inventory_box_container.get_children():
 		if child is InventoryBox:
 			var box := child as InventoryBox
 			box.box_index = _boxes.size()
-			box.card_scene = card_scene
 			box.card_drag_released.connect(_on_box_card_released)
 			_boxes.append(box)
 	if _boxes.size() != Inventory.inventory_cards.size():

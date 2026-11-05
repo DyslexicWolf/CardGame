@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SpellCircleResource" format=3]
+
+[ext_resource type="Script" uid="uid://diqes8i5jdy0k" path="res://Assets/Scripts/BaseResources/GD_SpellCircleResource.gd" id="1_mrsnd"]
+[ext_resource type="Texture2D" uid="uid://bkhteqfnv7kjv" path="res://Assets/Art/CircleSpells/T_FireArrow.png" id="2_art"]
+
+[resource]
+script = ExtResource("1_mrsnd")
+card_name = "Fire Arrow"
+card_art_texture = ExtResource("2_art")
+description = "Two quick fire arrows. Holds 2 runes."
+damage = 1
+damage_type = 0
+projectiles = 2
+base_mana_cost = 2
+max_runes = 2
+metadata/_custom_type_script = "uid://diqes8i5jdy0k"

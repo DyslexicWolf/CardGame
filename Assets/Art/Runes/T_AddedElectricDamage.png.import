@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cpco0gi0cm5wg"
-path="res://.godot/imported/T_FireCardBackgroundTest.png-f8abed4aefe164098a84a89dcdab9acf.ctex"
+uid="uid://bnrjssttq48d2"
+path="res://.godot/imported/T_AddedElectricDamage.png-c9fa28b546e5a27572ab28649fd3fed2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/UI/T_FireCardBackgroundTest.png"
-dest_files=["res://.godot/imported/T_FireCardBackgroundTest.png-f8abed4aefe164098a84a89dcdab9acf.ctex"]
+source_file="res://Assets/Art/Runes/T_AddedElectricDamage.png"
+dest_files=["res://.godot/imported/T_AddedElectricDamage.png-c9fa28b546e5a27572ab28649fd3fed2.ctex"]
 
 [params]
 

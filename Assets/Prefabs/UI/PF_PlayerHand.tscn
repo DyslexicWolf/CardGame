@@ -1,16 +1,43 @@
 [gd_scene format=3 uid="uid://csvxc575byp7d"]
 
 [ext_resource type="Script" uid="uid://dm55ocofgeyhb" path="res://Assets/Scripts/UI/GD_PlayerHand.gd" id="1_8l4qc"]
+[ext_resource type="Script" path="res://Assets/Scripts/UI/GD_HandFan.gd" id="2_fan"]
 
-[node name="PlayerHand" type="Control" unique_id=1754510952]
+[node name="PlayerHand" type="Control" unique_id=1754510952 node_paths=PackedStringArray("circle_fan", "rune_fan")]
 layout_mode = 3
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -111.0
-offset_bottom = -111.0
 grow_horizontal = 2
-grow_vertical = 0
+grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_8l4qc")
+circle_fan = NodePath("CircleFan")
+rune_fan = NodePath("RuneFan")
+
+[node name="CircleFan" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.22
+anchor_top = 1.0
+anchor_right = 0.22
+anchor_bottom = 1.0
+offset_top = -200.0
+offset_bottom = -200.0
+mouse_filter = 2
+script = ExtResource("2_fan")
+max_cards = 5
+card_spacing = 235.0
+max_fan_angle = 0.4
+
+[node name="RuneFan" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.78
+anchor_top = 1.0
+anchor_right = 0.78
+anchor_bottom = 1.0
+offset_top = -112.0
+offset_bottom = -112.0
+mouse_filter = 2
+script = ExtResource("2_fan")
+card_spacing = 120.0
+max_fan_angle = 0.55

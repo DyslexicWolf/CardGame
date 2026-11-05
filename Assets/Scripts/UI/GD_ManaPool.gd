@@ -9,6 +9,8 @@ signal mana_changed(committed: int, max_mana: int)
 		_refresh_bar()
 		mana_changed.emit(committed, max_mana)
 
+@export var mana_label: Label
+
 var committed := 0
 
 
@@ -32,3 +34,5 @@ func _refresh_bar() -> void:
 	min_value = 0
 	max_value = max_mana
 	value = clampi(get_available(), 0, max_mana)
+	if mana_label:
+		mana_label.text = "%d / %d" % [get_available(), max_mana]

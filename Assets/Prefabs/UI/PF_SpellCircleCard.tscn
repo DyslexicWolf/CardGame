@@ -1,0 +1,136 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Assets/Scripts/UI/GD_SpellCircleCard.gd" id="1_card"]
+[ext_resource type="Texture2D" uid="uid://bnqniavvq6e4n" path="res://Assets/Art/UI/T_FireCardBackground.png" id="2_fire"]
+[ext_resource type="Texture2D" uid="uid://bmhl36f1xfan5" path="res://Assets/Art/UI/T_ElectricCardBackground.png" id="3_electric"]
+[ext_resource type="Texture2D" uid="uid://hja720qgcsd6" path="res://Assets/Art/UI/T_LightCardBackground.png" id="4_light"]
+[ext_resource type="Texture2D" uid="uid://cbohmt5mp1jg6" path="res://Assets/Art/UI/T_DarkCardBackground.png" id="5_dark"]
+[ext_resource type="Texture2D" uid="uid://ei8tcoxpcq13" path="res://Assets/Art/UI/Symbols/T_DamageSymbol.png" id="6_damage"]
+[ext_resource type="Texture2D" uid="uid://dvwwnodhfyawx" path="res://Assets/Art/UI/Symbols/T_ManaSymbol.png" id="7_mana"]
+[ext_resource type="Texture2D" uid="uid://d3on8gbbnyakl" path="res://Assets/Art/Runes/T_MultipleProjectiles.png" id="8_projectiles"]
+
+[node name="SpellCircleCard" type="Control" node_paths=PackedStringArray("art_texture", "background", "name_label", "damage_label", "projectiles_label", "mana_label", "runes_label")]
+custom_minimum_size = Vector2(225, 375)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 225.0
+offset_bottom = 375.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("1_card")
+fire_background = ExtResource("2_fire")
+electric_background = ExtResource("3_electric")
+light_background = ExtResource("4_light")
+dark_background = ExtResource("5_dark")
+art_texture = NodePath("ArtTexture")
+background = NodePath("Background")
+name_label = NodePath("StatsBox/NameLabel")
+damage_label = NodePath("StatsBox/StatsGrid/Damage/Value")
+projectiles_label = NodePath("StatsBox/StatsGrid/Projectiles/Value")
+mana_label = NodePath("StatsBox/StatsGrid/Mana/Value")
+runes_label = NodePath("StatsBox/StatsGrid/RunesLabel")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource("2_fire")
+expand_mode = 1
+
+[node name="ArtTexture" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 82.5
+offset_top = 85.0
+offset_right = 142.5
+offset_bottom = 145.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StatsBox" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 250.0
+offset_right = 192.0
+offset_bottom = 330.0
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="StatsBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.13, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+clip_text = true
+
+[node name="StatsGrid" type="GridContainer" parent="StatsBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 2
+columns = 2
+
+[node name="Damage" type="HBoxContainer" parent="StatsBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="StatsBox/StatsGrid/Damage"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("6_damage")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Value" type="Label" parent="StatsBox/StatsGrid/Damage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.13, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="Projectiles" type="HBoxContainer" parent="StatsBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="StatsBox/StatsGrid/Projectiles"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("8_projectiles")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Value" type="Label" parent="StatsBox/StatsGrid/Projectiles"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.13, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="Mana" type="HBoxContainer" parent="StatsBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Icon" type="TextureRect" parent="StatsBox/StatsGrid/Mana"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("7_mana")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Value" type="Label" parent="StatsBox/StatsGrid/Mana"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.13, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+
+[node name="RunesLabel" type="Label" parent="StatsBox/StatsGrid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.2, 0.13, 0.1, 1)
+theme_override_font_sizes/font_size = 14
+vertical_alignment = 1

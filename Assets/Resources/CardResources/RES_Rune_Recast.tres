@@ -1,18 +1,17 @@
-[gd_resource type="Resource" script_class="RuneResource" format=3]
+[gd_resource type="Resource" script_class="RuneResource" format=3 uid="uid://dbprlf1k6onkw"]
 
 [ext_resource type="Script" uid="uid://ccp2nkxonokue" path="res://Assets/Scripts/BaseResources/GD_RuneResource.gd" id="1_rune"]
 [ext_resource type="Script" uid="uid://ckjiujpatppku" path="res://Assets/Scripts/BaseResources/GD_RuneModifier.gd" id="2_runemod"]
-[ext_resource type="Texture2D" uid="uid://cmp74bcudaedu" path="res://Assets/Art/Enemies/T_Pentagon.png" id="3_art"]
-[ext_resource type="Script" path="res://Assets/Scripts/BaseResources/RuneModifiers/GD_RecastModifier.gd" id="mod_Recast"]
+[ext_resource type="Texture2D" uid="uid://d3on8gbbnyakl" path="res://Assets/Art/Runes/T_MultipleProjectiles.png" id="3_art"]
+[ext_resource type="Script" uid="uid://ddfben50esljh" path="res://Assets/Scripts/BaseResources/RuneModifiers/GD_RecastModifier.gd" id="mod_Recast"]
 
 [sub_resource type="Resource" id="Resource_Recast_0"]
 script = ExtResource("mod_Recast")
-extra_casts = 1
 
 [resource]
 script = ExtResource("1_rune")
+mana_cost_multiplier = 2.5
+modifiers = Array[ExtResource("2_runemod")]([SubResource("Resource_Recast_0")])
 card_name = "Recast"
 card_art_texture = ExtResource("3_art")
 description = "The spell fires one extra time."
-mana_cost_multiplier = 2.5
-modifiers = Array[ExtResource("2_runemod")]([SubResource("Resource_Recast_0")])

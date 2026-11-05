@@ -1,0 +1,96 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Assets/Scripts/UI/GD_RuneCard.gd" id="1_card"]
+[ext_resource type="Texture2D" uid="uid://61jqbdktgfkf" path="res://Assets/Art/UI/T_RuneCardBackground.png" id="2_bg"]
+[ext_resource type="Shader" path="res://Assets/Art/Shaders/SH_RuneText.gdshader" id="3_shader"]
+[ext_resource type="FontFile" path="res://Assets/Art/Fonts/FONT_CardRunes.ttf" id="4_font"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_text"]
+resource_local_to_scene = true
+shader = ExtResource("3_shader")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_runes"]
+resource_local_to_scene = true
+shader = ExtResource("3_shader")
+shader_parameter/is_rune_layer = true
+
+[node name="RuneCard" type="Control" node_paths=PackedStringArray("art_texture", "multiplier_label", "description_label", "rune_text_label")]
+custom_minimum_size = Vector2(112, 188)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 112.0
+offset_bottom = 188.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource("1_card")
+hover_scale = 2.0
+drag_scale = 1.0
+art_texture = NodePath("RuneArt")
+multiplier_label = NodePath("MultiplierLabel")
+description_label = NodePath("Description/Text")
+rune_text_label = NodePath("Description/Runes")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = -55.5
+offset_top = -91.5
+offset_right = 169.5
+offset_bottom = 283.5
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+
+[node name="RuneArt" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 18.0
+offset_right = 93.0
+offset_bottom = 99.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MultiplierLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = -5.0
+offset_top = -3.0
+offset_right = 14.0
+offset_bottom = 13.0
+theme_override_colors/font_color = Color(0.86, 0.93, 0.92, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Description" type="Control" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 132.0
+offset_right = 100.0
+offset_bottom = 174.0
+mouse_filter = 2
+
+[node name="Runes" type="Label" parent="Description"]
+material = SubResource("ShaderMaterial_runes")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.13, 0.2, 0.24, 1)
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Text" type="Label" parent="Description"]
+material = SubResource("ShaderMaterial_text")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_colors/font_color = Color(0.93, 0.97, 0.96, 1)
+theme_override_font_sizes/font_size = 9
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

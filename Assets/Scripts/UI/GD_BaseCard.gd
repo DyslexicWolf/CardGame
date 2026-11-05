@@ -1,5 +1,5 @@
 class_name BaseCard
-extends PanelContainer
+extends Control
 
 signal hover_started(card: BaseCard)
 signal hover_ended(card: BaseCard)
@@ -8,6 +8,7 @@ signal drag_released(card: BaseCard, global_pos: Vector2)
 
 const HOVER_Z := 100
 const SLOT_Z := 150
+const SLOTTED_HOVER_Z := 160
 const DRAG_Z := 200
 
 static var hovered_card: BaseCard = null
@@ -16,12 +17,15 @@ static var interaction_locked := false
 static var _arbitrated_frame := -1
 
 @export var art_texture: TextureRect
-@export var effect_icon: TextureRect
 
 @export_group("Hover")
 @export var hover_scale := 1.15
 @export var hover_lift := 40.0
 @export var hover_duration := 0.2
+## Scale while being dragged.
+@export var drag_scale := 1.15
+## Hovered cards are kept this far inside the screen edges.
+@export var hover_screen_margin := 8.0
 
 var card_resource: CardResource
 var home_position := Vector2.ZERO
@@ -172,17 +176,18 @@ func _start_hover() -> void:
 	hovered_card = self
 	if not is_slotted:
 		z_index = HOVER_Z
-		tween_visual(home_position + Vector2(0, -hover_lift), 0.0, hover_scale, hover_duration)
+	else:
+		z_index = SLOTTED_HOVER_Z
+	var lift := 0.0 if is_slotted else hover_lift
+	tween_visual(_hover_position(lift), 0.0, hover_scale, hover_duration)
+	_on_hover_state_changed(true)
 	hover_started.emit(self)
 
 
 func _end_hover() -> void:
 	if not _hovered:
 		return
-	if is_slotted:
-		_release_hover_ownership()
-	else:
-		go_home(hover_duration)
+	go_home(hover_duration)
 	hover_ended.emit(self)
 
 
@@ -190,7 +195,7 @@ func _topmost_card_under_mouse() -> BaseCard:
 	var best: BaseCard = null
 	for node in get_tree().get_nodes_in_group("Cards"):
 		var card := node as BaseCard
-		if card == null or card.is_dragging or card.is_flying or not card._contains_mouse():
+		if card == null or card.is_dragging or card.is_flying or not card.is_visible_in_tree() or not card._contains_mouse():
 			continue
 		if best == null \
 				or card.z_index > best.z_index \
@@ -200,12 +205,43 @@ func _topmost_card_under_mouse() -> BaseCard:
 
 
 ## True if the mouse is inside this card's visual rect (scale/rotation/lift included).
+## Slotted cards use the rect of their slot, so an enlarged one doesn't block its neighbours.
 func _contains_mouse() -> bool:
+	if is_slotted:
+		return _slotted_rect().has_point(_parent_transform().affine_inverse() * get_global_mouse_position())
 	var local := get_global_transform().affine_inverse() * get_global_mouse_position()
 	return Rect2(Vector2.ZERO, size).has_point(local)
 
 
+func _slotted_rect() -> Rect2:
+	var scaled_size := size * home_scale
+	return Rect2(home_position + (size - scaled_size) * 0.5, scaled_size)
+
+
+func _parent_transform() -> Transform2D:
+	var parent := get_parent() as CanvasItem
+	return parent.get_global_transform() if parent else Transform2D.IDENTITY
+
+
+## Where this card sits while hovered: lifted, but always fully on screen at hover_scale.
+func _hover_position(lift: float) -> Vector2:
+	var parent := _parent_transform()
+	var center := parent * (home_position + size * 0.5 - Vector2(0, lift))
+	var half := size * hover_scale * 0.5 + Vector2.ONE * hover_screen_margin
+	var screen := get_viewport_rect().size
+	center.x = clampf(center.x, half.x, maxf(half.x, screen.x - half.x))
+	center.y = clampf(center.y, half.y, maxf(half.y, screen.y - half.y))
+	return parent.affine_inverse() * center - size * 0.5
+
+
+## Override to react to the card being hovered or not (also called when a drag takes over).
+func _on_hover_state_changed(_hovered_now: bool) -> void:
+	pass
+
+
 func _release_hover_ownership() -> void:
+	if _hovered:
+		_on_hover_state_changed(false)
 	_hovered = false
 	if hovered_card == self:
 		hovered_card = null
@@ -220,7 +256,7 @@ func _begin_drag() -> void:
 
 	var t := create_tween().set_parallel(true).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 	t.tween_property(self, "rotation", 0.0, 0.1)
-	t.tween_property(self, "scale", Vector2.ONE * hover_scale, 0.1)
+	t.tween_property(self, "scale", Vector2.ONE * drag_scale, 0.1)
 	_tween = t
 
 	force_drag(self, Control.new())

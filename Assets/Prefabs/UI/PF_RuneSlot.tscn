@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" uid="uid://dgd4gtwhjit35" path="res://Assets/Art/UI/T_EmptyBox.png" id="1_box"]
+[ext_resource type="Script" uid="uid://dvp5ylnd74u23" path="res://Assets/Scripts/UI/GD_RowSlot.gd" id="2_slot"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rune"]
+texture = ExtResource("1_box")
+
+[node name="RuneSlot" type="PanelContainer"]
+custom_minimum_size = Vector2(57, 94)
+custom_maximum_size = Vector2(57, 94)
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxTexture_rune")
+script = ExtResource("2_slot")
+accepted_type = 1
